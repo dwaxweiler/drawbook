@@ -2,6 +2,8 @@
 DrawBook
 
 To do:
+- methods
+- add event handlers for images to make it big (move it in other class Entry?) and for rectangles to start drawing
 Bugs:
 '''
 
@@ -10,6 +12,7 @@ Bugs:
 
 from libavg import avg, AVGApp
 import os
+import Entry
 
 
 
@@ -30,7 +33,7 @@ class DrawBook(AVGApp):
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
-    self.configuration = []; # list containing the configuration of the scene
+    self.configuration = []; # list containing the configuration of the scene (sublist for each row)
     
     # check if folder exists
     if not os.path.isdir(self.folder):
@@ -85,15 +88,44 @@ class DrawBook(AVGApp):
   
   def counterUp(self):
     '''
-    set the counter 1 up and checks if there enough free space left
+    set the counter 1 up and checks if there is enough free space left
     '''
-    return 0
+    self.counter += 1
+    
+    # count the free "boxes"
+    free = 0
+    for sublist in self.configuration:
+      for elem in sublist:
+        if elem == 0:
+          free += 1
+    # make it bigger if there are no more than 2 free "boxes"
+    if free <= 2:
+      self.enlarge()
+      self.save()
+      self.draw()
   
   def enlarge(self):
     '''
     adds new empty space around the images
     '''
-    return 0
+    temp = self.configuration
+    x_len = len(temp[0])
+    y_len = len(temp)
+    
+    # set new matrix 2 images bigger vertically and horizontally
+    self.configuration = []
+    # add sublists
+    for y in range(y_len+2):
+      self.configuration.append([])
+    # fill with zeros
+    for y in range(y_len+2):
+      for x in range(x_len+2):
+        self.configuration[y].append(0)
+    
+    # copy old values from the temporary matrix to the new one
+    for y in range(y_len):
+      for x in range(x_len):
+        self.configuration[y+1][x+1] = temp[y][x]
   
   
   def start(self):
@@ -108,7 +140,9 @@ class DrawBook(AVGApp):
     '''
     enables scrolling with event handlers (moves the master divNode)
     '''
+    # -> last "Übungsblatt (ListNode)" (but for touches)
     return 0
+  
 
 
 
