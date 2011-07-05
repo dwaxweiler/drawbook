@@ -5,9 +5,25 @@ To do:
 Bugs:
 '''
 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from libavg import avg
+
+
+
 class Entry(object):
-  def __init__(self):
+  
+  
+  def __init__(self, path, id, parentNode, x, y, width, height):
     '''
-    draws the images & set event handler
+    draws the image & sets event handler
     '''
-    return 0
+    image = avg.ImageNode(id=id, href=path, parent=parentNode, pos=(x, y), size=(width, height))
+    #image.setEventHandler(avg.CURSORDOWN, avg.TOUCH, self.onTouch())
+  
+  def onTouch(self):
+    '''
+    bring this image bigger to the front
+    '''
+    raise NotImplementedError
