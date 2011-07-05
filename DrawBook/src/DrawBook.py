@@ -34,7 +34,7 @@ class DrawBook(AVGApp):
     #self.player.enableMultitouch()
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
-    self.configuration = [[1,0,0,0,0,0], [0,0,0,0,0,2]]; # list containing the configuration of the scene (sublist for each row)
+    self.configuration = []; # list containing the configuration of the scene (sublist for each row)
     
     # check if folder exists
     if not os.path.isdir(self.folder):
@@ -77,7 +77,7 @@ class DrawBook(AVGApp):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
         if self.configuration[i][j] != 0 and os.path.isfile(path):
           # draw image if it exists
-          Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y, self.width/5, self.height/5, self.width, self.height, self.player)
+          Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y, self.width/5, self.height/5, self.width, self.height)
         else:
           # draw rectangle if there is a "0" or image does not exist
           Empty.Empty(str(i)+"x"+str(j), self.masterDivNode, x, y, self.width/5, self.height/5)
