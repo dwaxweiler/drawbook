@@ -11,7 +11,7 @@ Bugs:
 # -*- coding: utf-8 -*-
 
 from libavg import avg, AVGApp
-import os
+import os, cPickle
 import Entry, Empty
 
 
@@ -54,14 +54,17 @@ class DrawBook(AVGApp):
     '''
     saves the DrawBook configuration from the list to the file
     '''
-    raise NotImplementedError
+    with open(self.configFileName, "w") as f
+		cPickle.dump(self.congiguration,f)
+	
   
   
   def load(self):
     '''
     loads the DrawBook configuration from the file to the list
     '''
-    raise NotImplementedError
+    with open(self.configFileName, "r") as f
+		self.configuration = cPickle.load(f)
   
   
   def draw(self):
