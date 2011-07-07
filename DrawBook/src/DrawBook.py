@@ -29,6 +29,7 @@ class DrawBook(AVGApp):
     self.imageWidth = width*0.9 # width of the image
     self.folder = folder # path to the folder which contains the images
     self.counter = 0 # number of drawn images
+    self.imageNumber = 1 # next image number
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
     self.player = avg.Player.get() # libavg player
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
@@ -66,6 +67,7 @@ class DrawBook(AVGApp):
     self.configuration = []
     if os.path.isfile(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName):
       # load data from the configuration file if it exists
+      max = 0
       with open(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName, "r") as f:
         #self.configuration = cPickle.load(f)
         for line in f:
@@ -73,8 +75,13 @@ class DrawBook(AVGApp):
           # remove the last element "\n"
           del sublist[-1]
           self.configuration.append(sublist)
+          for elem in sublist:
+            if int(elem) > max:
+              max = int(elem)
+      self.imageNumber = max+1
     else:
       # load minimal empty list because the configuration file does not exist
+      self.imageNumber = 1
       self.configuration = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
     
@@ -96,7 +103,8 @@ class DrawBook(AVGApp):
                       self.width, self.height, self.imageWidth, 0.2)
         else:
           # draw rectangle if there is a "0" or image does not exist
-          Empty.Empty(str(i)+"x"+str(j), self.masterDivNode, x, y, self.imageWidth/5, self.height/5)
+          Empty.Empty(i, j, self.masterDivNode, x, y, self.imageWidth/5, self.height/5,
+                      self.player, self.imageWidth, self.width, self.height, self.imageNumber)
         x += self.imageWidth/5+2
       y += self.height/5+2
   
@@ -141,6 +149,16 @@ class DrawBook(AVGApp):
     for y in range(y_len):
       for x in range(x_len):
         self.configuration[y+1][x+1] = temp[y][x]
+  
+  
+  def setNewImage(self, y, x, n):
+    '''
+    updates the configuration list with a new image & update the file and scene
+    arguments: y, x: coordinates in the matrix, n: file name
+    '''
+    self.configuration[y][x] = n;
+    self.save()
+    self.draw()
   
 
   def start(self):
