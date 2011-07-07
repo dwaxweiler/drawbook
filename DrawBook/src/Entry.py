@@ -10,22 +10,22 @@ Bugs:
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from libavg import *
+from libavg import avg, ParallelAnim, LinearAnim
 
 
 
 class Entry(object):
   
   
-  def __init__(self, path, id, parentNode, x, y, width, height, imageWidth, screenWidth, screenHeight):
+  def __init__(self, path, id, parentNode, x, y, screenWidth, screenHeight, imageWidth, factor):
     '''
     draws the image & sets event handler
     '''
     self.parentNode = parentNode # parent node for this image
-    self.imageWidth = imageWidth
+    self.imageWidth = imageWidth # width of this image
     self.screenWidth = screenWidth # with of the screen
     self.screenHeight = screenHeight # height of the screen
-    self.thumb = avg.ImageNode(id=id, href=path, parent=parentNode, pos=(x, y), size=(width, height))
+    self.thumb = avg.ImageNode(id=id, href=path, parent=parentNode, pos=(x, y), size=(imageWidth*factor, screenHeight*factor))
     self.thumb.setEventHandler(avg.CURSORDOWN, avg.MOUSE, self.thumbOnTouch)
   
   
@@ -44,7 +44,7 @@ class Entry(object):
        LinearAnim(self.largeImage, "width", 500, self.largeImage.width, self.imageWidth-30),
        LinearAnim(self.largeImage, "height", 500, self.largeImage.height, self.screenHeight-30)])
     animation.start()
-    self.background.setEventHandler(avg.CURSORDOWN, avg.MOUSE, self.largeOnTouch)
+    self.background.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.largeOnTouch)
     
   
   def largeOnTouch(self, event):

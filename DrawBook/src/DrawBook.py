@@ -26,7 +26,7 @@ class DrawBook(AVGApp):
     '''
     self.height = height # height of the screen
     self.width = width # width of the screen
-    self.imageWidth = width*0.9
+    self.imageWidth = width*0.9 # width of the image
     self.folder = folder # path to the folder which contains the images
     self.counter = 0 # number of drawn images
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
@@ -35,38 +35,48 @@ class DrawBook(AVGApp):
     #self.player.enableMultitouch()
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
-    self.masterDivNode.crop = True
-
-    self.configuration = [[1,2,3,0,0,0],[4,0,0,0,0,0]]; # list containing the configuration of the scene (sublist for each row)
+    self.masterDivNode.crop = True # turn clipping of div Node on
+    self.configuration = []; # list containing the configuration of the scene (sublist for each row)
     
     # check if folder exists
     if not os.path.isdir(self.folder):
       exit('Folder containing the images does not exist!')
     
-    # create subfolder for current resolution if it does not exist
+    # create subfolder for images for current resolution if it does not exist
     if not os.path.isdir(self.folder + "/" + str(self.width) + "x" + str(self.height)):
       os.makedirs(str(self.width) + "x" + str(self.height))
       
-    # create configuration file if it does not exist
-    if not os.path.isfile(self.folder):
-      fopj = open(self.configFileName, "w")
-      fopj.close()
-  
   
   def save(self):
     '''
     saves the DrawBook configuration from the list to the file
     '''
-    with open(self.configFileName, "w") as f:
-      cPickle.dump(self.congiguration,f)
+    with open(self.folder + "/" + self.configFileName, "w") as f:
+      #cPickle.dump(self.configuration, f)
+      for sublist in self.configuration:
+        for elem in sublist:
+          f.write(str(elem) + " ")
+        f.write("\n")
   
   
   def load(self):
     '''
     loads the DrawBook configuration from the file to the list
     '''
-    with open(self.configFileName, "r") as f:
-      self.configuration = cPickle.load(f)
+    self.configuration = []
+    if os.path.isfile(self.folder + "/" + self.configFileName):
+      # load data from the configuration file if it exists
+      with open(self.folder + "/" + self.configFileName, "r") as f:
+        #self.configuration = cPickle.load(f)
+        for line in f:
+          sublist = line.split(" ")
+          # remove the last element "\n"
+          del sublist[-1]
+          self.configuration.append(sublist)
+    else:
+      # load minimal empty list because the configuration file does not exist
+      self.configuration = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
     
   
   def draw(self):
@@ -82,7 +92,8 @@ class DrawBook(AVGApp):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
         if self.configuration[i][j] != 0 and os.path.isfile(path):
           # draw image if it exists
-          Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y, self.imageWidth/5, self.height/5, self.imageWidth, self.width, self.height)
+          Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y,
+                      self.width, self.height, self.imageWidth, 0.2)
         else:
           # draw rectangle if there is a "0" or image does not exist
           Empty.Empty(str(i)+"x"+str(j), self.masterDivNode, x, y, self.imageWidth/5, self.height/5)
@@ -137,6 +148,7 @@ class DrawBook(AVGApp):
     starts the draw book
     '''
     #self.scrolling()
+    self.load()
     self.draw()
     self.player.play()
 

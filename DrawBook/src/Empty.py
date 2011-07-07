@@ -20,7 +20,7 @@ class Empty(object):
     draws the rectangle & sets event handler
     '''
     rect = avg.RectNode(id=id, fillcolor="FFFFFF", fillopacity=1.0, parent=parentNode, pos=(x, y), size=(width, height), strokewidth=0)
-    rect.setEventHandler(avg.CURSORDOWN, avg.TOUCH, self.onTouch)
+    rect.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
     
   def onTouch(self, event):
     '''
