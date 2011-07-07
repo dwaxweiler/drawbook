@@ -35,7 +35,9 @@ class DrawBook(AVGApp):
     #self.player.enableMultitouch()
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
-    self.configuration = [[1,0,0,0,0,0],[0,0,0,0,0,0]]; # list containing the configuration of the scene (sublist for each row)
+    self.masterDivNode.crop = True
+
+    self.configuration = [[1,2,3,0,0,0],[4,0,0,0,0,0]]; # list containing the configuration of the scene (sublist for each row)
     
     # check if folder exists
     if not os.path.isdir(self.folder):
@@ -129,23 +131,36 @@ class DrawBook(AVGApp):
       for x in range(x_len):
         self.configuration[y+1][x+1] = temp[y][x]
   
-  
+
   def start(self):
     '''
     starts the draw book
     '''
+    #self.scrolling()
     self.draw()
     self.player.play()
-  
+
   
   def scrolling(self):
     '''
     enables scrolling with event handlers (moves the master divNode)
     '''
     # -> last "Uebungsblatt (ListNode)" (but for touches)
-    raise NotImplementedError
+    self.masterDivNode.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
+    self.masterDivNode.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.touchRelease)  
   
-
+  def onTouch(self, event):
+      self.offset = (self.masterDivNode.pos[0],self.masterDivNode.pos[1])
+      event.masterDivNode.setEventCapture()
+      #self.player.setTimeout(1000, self.onTouchMotion(event))
+      
+  def onTouchMotion (self, event):
+      if self.offset != None:
+          self.masterDivNode.pos = (self.offset[0] + event.x-self.offset[0], self.offset[1] + event.y-self.offset[1])
+             
+  def touchRelease(self, event):
+      self.offset = None
+      event.masterDivNode.releaseEventCapture()
 
 
 def main():
@@ -154,3 +169,5 @@ def main():
 
 if __name__ == '__main__':
   main()
+  #DrawBook.start(resolution=(800, 600))
+  
