@@ -51,7 +51,7 @@ class DrawBook(AVGApp):
     '''
     saves the DrawBook configuration from the list to the file
     '''
-    with open(self.folder + "/" + self.configFileName, "w") as f:
+    with open(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName, "w") as f:
       #cPickle.dump(self.configuration, f)
       for sublist in self.configuration:
         for elem in sublist:
@@ -64,9 +64,9 @@ class DrawBook(AVGApp):
     loads the DrawBook configuration from the file to the list
     '''
     self.configuration = []
-    if os.path.isfile(self.folder + "/" + self.configFileName):
+    if os.path.isfile(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName):
       # load data from the configuration file if it exists
-      with open(self.folder + "/" + self.configFileName, "r") as f:
+      with open(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName, "r") as f:
         #self.configuration = cPickle.load(f)
         for line in f:
           sublist = line.split(" ")
@@ -181,5 +181,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-  #DrawBook.start(resolution=(800, 600))
-  
