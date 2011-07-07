@@ -26,6 +26,7 @@ class DrawBook(AVGApp):
     '''
     self.height = height # height of the screen
     self.width = width # width of the screen
+    self.imageWidth = width*0.9
     self.folder = folder # path to the folder which contains the images
     self.counter = 0 # number of drawn images
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
@@ -34,7 +35,7 @@ class DrawBook(AVGApp):
     #self.player.enableMultitouch()
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
-    self.configuration = []; # list containing the configuration of the scene (sublist for each row)
+    self.configuration = [[1,0,0,0,0,0],[0,0,0,0,0,0]]; # list containing the configuration of the scene (sublist for each row)
     
     # check if folder exists
     if not os.path.isdir(self.folder):
@@ -54,18 +55,17 @@ class DrawBook(AVGApp):
     '''
     saves the DrawBook configuration from the list to the file
     '''
-    with open(self.configFileName, "w") as f
-		cPickle.dump(self.congiguration,f)
-	
+    with open(self.configFileName, "w") as f:
+      cPickle.dump(self.congiguration,f)
   
   
   def load(self):
     '''
     loads the DrawBook configuration from the file to the list
     '''
-    with open(self.configFileName, "r") as f
-		self.configuration = cPickle.load(f)
-  
+    with open(self.configFileName, "r") as f:
+      self.configuration = cPickle.load(f)
+    
   
   def draw(self):
     '''
@@ -75,16 +75,16 @@ class DrawBook(AVGApp):
     y = (len(self.configuration)*(self.height/5+2)-2-self.height)/-2
     for i in range(len(self.configuration)):
       # calculate x coordinate of first image in each row
-      x = (len(self.configuration[i])*(self.width/5+2)-2-self.width)/-2
+      x = (len(self.configuration[i])*(self.imageWidth/5+2)-2-self.width)/-2
       for j in range(len(self.configuration[i])):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
         if self.configuration[i][j] != 0 and os.path.isfile(path):
           # draw image if it exists
-          Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y, self.width/5, self.height/5, self.width, self.height)
+          Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y, self.imageWidth/5, self.height/5, self.imageWidth, self.width, self.height)
         else:
           # draw rectangle if there is a "0" or image does not exist
-          Empty.Empty(str(i)+"x"+str(j), self.masterDivNode, x, y, self.width/5, self.height/5)
-        x += self.width/5+2
+          Empty.Empty(str(i)+"x"+str(j), self.masterDivNode, x, y, self.imageWidth/5, self.height/5)
+        x += self.imageWidth/5+2
       y += self.height/5+2
   
   

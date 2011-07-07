@@ -17,11 +17,12 @@ from libavg import *
 class Entry(object):
   
   
-  def __init__(self, path, id, parentNode, x, y, width, height, screenWidth, screenHeight):
+  def __init__(self, path, id, parentNode, x, y, width, height, imageWidth, screenWidth, screenHeight):
     '''
     draws the image & sets event handler
     '''
     self.parentNode = parentNode # parent node for this image
+    self.imageWidth = imageWidth
     self.screenWidth = screenWidth # with of the screen
     self.screenHeight = screenHeight # height of the screen
     self.thumb = avg.ImageNode(id=id, href=path, parent=parentNode, pos=(x, y), size=(width, height))
@@ -38,9 +39,9 @@ class Entry(object):
                                       pos=(self.thumb.x, self.thumb.y), size=(self.thumb.width, self.thumb.height),
                                       sensitive=True)
     animation = ParallelAnim(
-      [LinearAnim(self.largeImage, "x", 500, self.largeImage.x, 15),
+      [LinearAnim(self.largeImage, "x", 500, self.largeImage.x, (self.screenWidth - self.imageWidth) / 2),
        LinearAnim(self.largeImage, "y", 500, self.largeImage.y, 15),
-       LinearAnim(self.largeImage, "width", 500, self.largeImage.width, self.screenWidth-30),
+       LinearAnim(self.largeImage, "width", 500, self.largeImage.width, self.imageWidth-30),
        LinearAnim(self.largeImage, "height", 500, self.largeImage.height, self.screenHeight-30)])
     animation.start()
     self.background.setEventHandler(avg.CURSORDOWN, avg.MOUSE, self.largeOnTouch)
