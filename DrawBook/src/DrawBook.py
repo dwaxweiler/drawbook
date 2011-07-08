@@ -11,7 +11,7 @@ Bugs:
 # -*- coding: utf-8 -*-
 
 from libavg import avg, AVGApp
-import os, cPickle
+import os#, cPickle
 import Entry, Empty
 
 
