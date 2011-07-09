@@ -2,8 +2,7 @@
 DrawBook
 
 To do:
-- methods
-- in the beginning whole screen should be filled with empty "boxes"
+- scrolling
 Bugs:
 '''
 
