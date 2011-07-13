@@ -3,6 +3,9 @@ DrawBook
 
 To do:
 - scrolling
+- comment scrolling functions
+- test enlarging
+- less important: add zoom effect also to the start of drawing
 Bugs:
 '''
 
@@ -107,27 +110,19 @@ class DrawBook(AVGApp):
       y += self.height/5+2
   
   
-  def clean(self):
-    '''
-    deletes all entries on the scene
-    '''
-    self.masterDivNode.unlink()
-    self.masterDivNode = avg.DivNode(parent=self.player.getRootNode())
-  
-  
   def counterUp(self):
     '''
     set the counter 1 up and checks if there is enough free space left
     '''
     self.counter += 1
     
-    # count the free "boxes"
+    # count the rectangles
     free = 0
     for sublist in self.configuration:
       for elem in sublist:
         if int(elem) == 0:
           free += 1
-    # make it bigger if there are no more than 2 free "boxes"
+    # make it bigger if there are no more than 2 rectangles
     if free <= 2:
       self.enlarge()
       self.save()
@@ -157,15 +152,24 @@ class DrawBook(AVGApp):
         self.configuration[y+1][x+1] = temp[y][x]
   
   
-  def setNewImage(self, y, x, n):
+  def setNewDrawing(self, j, i, n):
     '''
-    updates the configuration list with a new image & update the file and scene
-    arguments: y, x: coordinates in the matrix, n: file name
+    updates the configuration list with a new image & updates the file and the scene
+    arguments: j, i: coordinates in the matrix, n: file name
     '''
-    self.configuration[y][x] = n;
+    # set the number of the new drawing on the correct place in the matrix
+    self.configuration[j][i] = n;
+    # save this configuration
     self.save()
-    self.clean()
-    self.draw()
+    # get the rectangle where the new drawing should be shown now
+    rectangle = self.player.getElementByID(str(i) + "x" + str(j))
+    # delete this rectangle
+    rectangle.unlink()
+    # put the drawing on the place where the rectangle was
+    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter+1) + ".jpg", str(self.counter+1),
+                self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2)
+    # set the counter up and enlarge if necessary
+    self.counterUp()
   
 
   def start(self):

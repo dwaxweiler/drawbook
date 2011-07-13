@@ -30,8 +30,6 @@ class Draw(object):
     self.drawBook = drawBook
     self.cursorIDs = [] # list of all the touches in use
     
-    print folder
-    
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
     # create the background of the tool bar
@@ -47,7 +45,7 @@ class Draw(object):
     # create canvas for the drawing surface
     self.drawCanvas = player.loadCanvasString("<canvas id=\"drawing\" width=\""+str(imageWidth)+"\" height=\""+str(screenHeight)+"\"></canvas>")
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=player.getCanvas("drawing").getRootNode(),
-                 pos=(0, 0), size=(imageWidth, screenHeight))
+                 pos=(0, 0), size=(imageWidth, screenHeight), strokewidth=0)
     # load canvas in the scene
     self.drawingSurface = avg.ImageNode(id="surface", href="canvas:drawing", parent=player.getRootNode(),
                                  pos=(screenWidth-imageWidth, 0), size=(imageWidth, screenHeight))
@@ -61,8 +59,8 @@ class Draw(object):
     '''
     event handler function that starts the drawing
     '''
-    self.drawCircleNode(event.pos)
     self.cursorIDs.append(event.cursorid)
+    self.drawCircleNode(event.pos)
   
   
   def doDrawing(self, event):
@@ -95,8 +93,7 @@ class Draw(object):
     event handler function that saves the image and returns to the gallery
     '''
     avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.imageNumber) + ".jpg")
-    self.drawBook.setNewImage(self.j, self.i, self.imageNumber)
-    self.drawBook.counterUp()
+    self.drawBook.setNewDrawing(self.j, self.i, self.imageNumber)
     self.exit()
   
   
@@ -112,7 +109,5 @@ class Draw(object):
     deletes everything related to drawing
     '''
     self.toolBar.unlink()
-    #self.drawingSurface.unlink()
-    
     self.drawingSurface.unlink()
     self.player.deleteCanvas("drawing")

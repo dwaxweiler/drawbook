@@ -20,15 +20,16 @@ class Empty(object):
     '''
     draws the rectangle & sets event handler
     '''
-    self.j = j
-    self.i = i
-    self.player = player
-    self.imageWidth = imageWidth
-    self.screenWidth = screenWidth
-    self.screenHeight = screenHeight
-    self.imageNumber = imageNumber
-    self.folder = folder
-    self.drawBook = drawBook
+    self.j = j # y position of the rectangle
+    self.i = i # x position of the rectangle
+    self.player = player # libavg player
+    self.imageWidth = imageWidth # width of the image
+    self.screenWidth = screenWidth # width of the screen
+    self.screenHeight = screenHeight # height of the screen
+    self.imageNumber = imageNumber # number of the new drawing
+    self.folder = folder # folder where the new drawing should be saved
+    self.drawBook = drawBook # instance of the draw book
+    
     rect = avg.RectNode(id=str(i)+"x"+str(j), fillcolor="FFFFFF", fillopacity=1.0, parent=parentNode, pos=(x, y), size=(width, height),
                         strokewidth=0)
     rect.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
