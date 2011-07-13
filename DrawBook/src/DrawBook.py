@@ -28,7 +28,6 @@ class DrawBook(AVGApp):
     self.imageWidth = width*0.9 # width of the image
     self.folder = folder # path to the folder which contains the images
     self.counter = 0 # number of drawn images
-    self.imageNumber = 1 # next image number
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
     self.player = avg.Player.get() # libavg player
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
@@ -77,10 +76,10 @@ class DrawBook(AVGApp):
           for elem in sublist:
             if int(elem) > max:
               max = int(elem)
-      self.imageNumber = max+1
+      self.counter = max
     else:
       # load minimal empty list because the configuration file does not exist
-      self.imageNumber = 1
+      self.counter = 0
       self.configuration = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
     
@@ -102,10 +101,18 @@ class DrawBook(AVGApp):
                       self.width, self.height, self.imageWidth, 0.2)
         else:
           # draw rectangle if there is a "0" or image does not exist
-          Empty.Empty(i, j, self.masterDivNode, x, y, self.imageWidth/5, self.height/5,
-                      self.player, self.imageWidth, self.width, self.height, self.imageNumber)
+          Empty.Empty(i, j, self.masterDivNode, x, y, self.imageWidth/5, self.height/5, self.player, self.imageWidth, self.width,
+                      self.height, self.counter+1, self.folder + "/" + str(self.width) + "x" + str(self.height) + "/", self)
         x += self.imageWidth/5+2
       y += self.height/5+2
+  
+  
+  def clean(self):
+    '''
+    deletes all entries on the scene
+    '''
+    self.masterDivNode.unlink()
+    self.masterDivNode = avg.DivNode(parent=self.player.getRootNode())
   
   
   def counterUp(self):
@@ -118,7 +125,7 @@ class DrawBook(AVGApp):
     free = 0
     for sublist in self.configuration:
       for elem in sublist:
-        if elem == 0:
+        if int(elem) == 0:
           free += 1
     # make it bigger if there are no more than 2 free "boxes"
     if free <= 2:
@@ -157,6 +164,7 @@ class DrawBook(AVGApp):
     '''
     self.configuration[y][x] = n;
     self.save()
+    self.clean()
     self.draw()
   
 

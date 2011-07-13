@@ -16,7 +16,7 @@ import Draw
 class Empty(object):
   
   
-  def __init__(self, j, i, parentNode, x, y, width, height, player, imageWidth, screenWidth, screenHeight, imageNumber):
+  def __init__(self, j, i, parentNode, x, y, width, height, player, imageWidth, screenWidth, screenHeight, imageNumber, folder, drawBook):
     '''
     draws the rectangle & sets event handler
     '''
@@ -27,7 +27,10 @@ class Empty(object):
     self.screenWidth = screenWidth
     self.screenHeight = screenHeight
     self.imageNumber = imageNumber
-    rect = avg.RectNode(id=str(i)+"x"+str(j), fillcolor="FFFFFF", fillopacity=1.0, parent=parentNode, pos=(x, y), size=(width, height), strokewidth=0)
+    self.folder = folder
+    self.drawBook = drawBook
+    rect = avg.RectNode(id=str(i)+"x"+str(j), fillcolor="FFFFFF", fillopacity=1.0, parent=parentNode, pos=(x, y), size=(width, height),
+                        strokewidth=0)
     rect.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
 
 
@@ -35,4 +38,5 @@ class Empty(object):
     '''
     start to draw on this position
     '''
-    Draw.Draw(self.j, self.i, self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.imageNumber)
+    Draw.Draw(self.j, self.i, self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.imageNumber, self.folder,
+              self.drawBook)
