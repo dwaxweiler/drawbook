@@ -30,9 +30,16 @@ class Empty(object):
     self.folder = folder # folder where the new drawing should be saved
     self.drawBook = drawBook # instance of the draw book
     
-    rect = avg.RectNode(id=str(i)+"x"+str(j), fillcolor="FFFFFF", fillopacity=1.0, parent=parentNode, pos=(x, y), size=(width, height),
-                        strokewidth=0)
-    rect.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
+    # create container
+    container = avg.DivNode(id=str(i)+"x"+str(j), parent=parentNode, pos=(x, y), size=(width, height))
+    container.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
+    # create white rectangle
+    avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=container, pos=(0, 0), size=(width, height), strokewidth=0)
+    # create info text
+    text = avg.WordsNode(color="000000", fontsize=20, parent=container, pos=(0, 0), text="Touch to draw here")
+    # center text
+    text.x = (width - text.width) / 2
+    text.y = (height - text.height) / 2
 
 
   def onTouch(self, event):
