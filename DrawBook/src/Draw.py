@@ -4,10 +4,11 @@ DrawBook
 To do:
 - add possibility to change colour
 - add possibility to change size
-- add possibility to erase
+- add possibility to erase (instead of pencil icon -> eraser icon, depending on mode)
 - add possibility to take webcam photos
+- center toolbar icons vertically
 Bugs:
-- when user goes with finger pressed down right in to the tool bar
+- strange effects when user is drawing and moves with the finger pressed down right over the tool bar
 '''
 
 #!/usr/bin/env python
@@ -42,14 +43,22 @@ class Draw(object):
                  size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # pace the icons with their functionality on the tool bar
     n = screenWidth-imageWidth-10
-    save = avg.ImageNode(href="img/apply.png", parent=self.toolBar, pos=(5, 50), size=(n, n))
+    # webcam button
+    webcam = avg.ImageNode(href="img/webcam.png", parent=self.toolBar, pos=(5, 50), size=(n, n))
+    webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
+    # tool button
+    tool = avg.ImageNode(href="img/pencil.png", parent=self.toolBar, pos=(5, 200), size=(n, n))
+    tool.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
+    # save button
+    save = avg.ImageNode(href="img/apply.png", parent=self.toolBar, pos=(5, 350), size=(n, n))
     save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
-    cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 200), size=(n, n))
+    # cancel button
+    cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 500), size=(n, n))
     cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
     
     # create canvas for the drawing surface
     self.drawCanvas = player.loadCanvasString("<canvas id=\"drawing\" width=\""+str(imageWidth)+"\" height=\""+str(screenHeight)+"\"></canvas>")
-    avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=player.getCanvas("drawing").getRootNode(),
+    avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
                  pos=(0, 0), size=(imageWidth, screenHeight), strokewidth=0)
     # load canvas in the scene
     self.drawingSurface = avg.ImageNode(id="surface", href="canvas:drawing", parent=player.getRootNode(),
@@ -117,12 +126,29 @@ class Draw(object):
     avg.LineNode(color="000000", parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
   
   
+  def webcam(self, event):
+    '''
+    event handler function that starts the webcam and loads the image to the screen
+    '''
+    # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
+    return 0
+  
+  
+  def pencil(self, event):
+    '''
+    event handler function that selects pencil tool
+    '''
+    return 0
+  
+  
   def save(self, event):
     '''
     event handler function that saves the image and returns to the gallery
     '''
-    avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.imageNumber) + ".jpg")
-    self.drawBook.setNewDrawing(self.j, self.i, self.imageNumber)
+    # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
+    if(self.drawCanvas.getRootNode().getNumChildren() > 1):
+      avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.imageNumber) + ".jpg")
+      self.drawBook.setNewDrawing(self.j, self.i, self.imageNumber)
     self.exit()
   
   

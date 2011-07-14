@@ -3,9 +3,8 @@ DrawBook
 
 To do:
 - scrolling
-- comment scrolling functions
 - test enlarging (adding more free space)
-- less important: add zoom effect also to the start of drawing
+- (add zoom effect also to the start of drawing)
 Bugs:
 '''
 
@@ -13,7 +12,7 @@ Bugs:
 # -*- coding: utf-8 -*-
 
 from libavg import avg, AVGApp
-import os#, cPickle
+import os
 import Entry, Empty
 
 
@@ -54,7 +53,6 @@ class DrawBook(AVGApp):
     saves the DrawBook configuration from the list to the file
     '''
     with open(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName, "w") as f:
-      #cPickle.dump(self.configuration, f)
       for sublist in self.configuration:
         for elem in sublist:
           f.write(str(elem) + " ")
@@ -70,7 +68,6 @@ class DrawBook(AVGApp):
       # load data from the configuration file if it exists
       max = 0
       with open(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + self.configFileName, "r") as f:
-        #self.configuration = cPickle.load(f)
         for line in f:
           sublist = line.split(" ")
           # remove the last element "\n"
@@ -190,18 +187,22 @@ class DrawBook(AVGApp):
     self.masterDivNode.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
     self.masterDivNode.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.touchRelease)  
   
+  
   def onTouch(self, event):
       self.offset = (self.masterDivNode.pos[0],self.masterDivNode.pos[1])
       event.masterDivNode.setEventCapture()
       #self.player.setTimeout(1000, self.onTouchMotion(event))
-      
+  
+  
   def onTouchMotion (self, event):
       if self.offset != None:
           self.masterDivNode.pos = (self.offset[0] + event.x-self.offset[0], self.offset[1] + event.y-self.offset[1])
-             
+  
+  
   def touchRelease(self, event):
       self.offset = None
       event.masterDivNode.releaseEventCapture()
+
 
 
 def main():
