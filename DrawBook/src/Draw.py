@@ -2,14 +2,19 @@
 DrawBook
 
 To do:
-- do drawing with an interval which tracks all the touches every xx ms -> faster reaction
+- add possibility to change colour
+- add possibility to change size
+- add possibility to erase
+- add possibility to take webcam photos
 Bugs:
+- when user goes with finger pressed down right in to the tool bar
 '''
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from libavg import avg
+import math
 
 
 
@@ -27,8 +32,8 @@ class Draw(object):
     self.screenWidth = screenWidth # width of the screen
     self.imageNumber = imageNumber # number that of the new drawing
     self.folder = folder # folder where the new drawing should be stored
-    self.drawBook = drawBook
-    self.cursorIDs = [] # list of all the touches in use
+    self.drawBook = drawBook # instance of the draw book
+    self.cursorIDs = {} # dictionary of all the touches in use with their last position
     
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
@@ -59,33 +64,58 @@ class Draw(object):
     '''
     event handler function that starts the drawing
     '''
-    self.cursorIDs.append(event.cursorid)
-    self.drawCircleNode(event.pos)
+    self.cursorIDs[event.cursorid] = event.pos
+    self.drawCircleNode(event.pos[0]-self.screenWidth+self.imageWidth, event.pos[1])
   
   
   def doDrawing(self, event):
     '''
     event handler function that does the drawing
     '''
-    if event.cursorid in self.cursorIDs:
-      self.drawCircleNode(event.pos)
+    if event.cursorid in self.cursorIDs.keys():
+      self.draw(self.cursorIDs[event.cursorid], event.pos)
+      self.cursorIDs[event.cursorid] = event.pos
   
   
   def endDrawing(self, event):
     '''
     event handler function that stops the drawing
     '''
-    if event.cursorid in self.cursorIDs:
-      self.drawCircleNode(event.pos)
-      self.cursorIDs.remove(event.cursorid)
+    if event.cursorid in self.cursorIDs.keys():
+      self.draw(self.cursorIDs[event.cursorid], event.pos)
+      del self.cursorIDs[event.cursorid]
+  
+  def draw(self, pos1, pos2):
+    '''
+    decides what to draw
+    arguments: x1, y1: old position; x2, y2: new position
+    '''
+    # assign coordinates and translate x coordinates
+    x1 = pos1[0]-self.screenWidth+self.imageWidth
+    y1 = pos1[1]
+    x2 = pos2[0]-self.screenWidth+self.imageWidth
+    y2 = pos2[1]
+    # use Pythagorean theorem to calculate the distance between the two points and draw a LineNode if it is to far
+    if(math.sqrt((x1-x2)**2+(y1-y2)**2) > 5):
+      self.drawLineNode(x1, y1, x2, y2)
+    self.drawCircleNode(x2, y2)
   
   
-  def drawCircleNode(self, pos):
+  def drawCircleNode(self, x, y):
     '''
     draws a circle node on the given position
+    arguments: x, y: position
     '''
     avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
-                   pos=(pos[0]-self.screenWidth+self.imageWidth, pos[1]), r=10, sensitive=True, strokewidth=0)
+                   pos=(x, y), r=10, sensitive=True, strokewidth=0)
+  
+  
+  def drawLineNode(self, x1, y1, x2, y2):
+    '''
+    draws a line node between the two given positions
+    arguments: x1, y1: start position; x2, y2: end position
+    '''
+    avg.LineNode(color="000000", parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
   
   
   def save(self, event):

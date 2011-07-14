@@ -4,7 +4,7 @@ DrawBook
 To do:
 - scrolling
 - comment scrolling functions
-- test enlarging
+- test enlarging (adding more free space)
 - less important: add zoom effect also to the start of drawing
 Bugs:
 '''
