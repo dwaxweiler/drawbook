@@ -106,8 +106,7 @@ class Draw(object):
     draws a circle node on the given position
     arguments: x, y: position
     '''
-    avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
-                   pos=(x, y), r=10, sensitive=True, strokewidth=0)
+    avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
   
   
   def drawLineNode(self, x1, y1, x2, y2):
