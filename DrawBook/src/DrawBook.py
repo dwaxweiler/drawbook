@@ -33,7 +33,7 @@ class DrawBook(AVGApp):
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
     self.player = avg.Player.get() # libavg player
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
-    #self.player.enableMultitouch() uncomment this line to activate multitouch
+    #self.player.enableMultitouch() #uncomment this line to activate multitouch
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
     self.configuration = []; # list containing the configuration of the scene (sublist for each row)
