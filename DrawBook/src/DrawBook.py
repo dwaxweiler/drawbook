@@ -29,14 +29,13 @@ class DrawBook(AVGApp):
     self.width = width # width of the screen
     self.imageWidth = width*0.9 # width of the image
     self.folder = folder # path to the folder which contains the images
-    self.counter = 0 # number of drawn images
+    self.counter = 0 # number of next drawing
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
     self.player = avg.Player.get() # libavg player
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
-    #self.player.enableMultitouch()
+    #self.player.enableMultitouch() uncomment this line to activate multitouch
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
-    self.masterDivNode.crop = True # turn clipping of div Node on
     self.configuration = []; # list containing the configuration of the scene (sublist for each row)
     
     # check if folder exists
@@ -82,6 +81,7 @@ class DrawBook(AVGApp):
       self.counter = 0
       self.configuration = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+    self.counter += 1
     
   
   def draw(self):
@@ -102,7 +102,7 @@ class DrawBook(AVGApp):
         else:
           # draw rectangle if there is a "0" or image does not exist
           Empty.Empty(i, j, self.masterDivNode, x, y, self.imageWidth/5, self.height/5, self.player, self.imageWidth, self.width,
-                      self.height, self.counter+1, self.folder + "/" + str(self.width) + "x" + str(self.height) + "/", self)
+                      self.height, self.folder + "/" + str(self.width) + "x" + str(self.height) + "/", self)
         x += self.imageWidth/5+2
       y += self.height/5+2
   
@@ -149,13 +149,13 @@ class DrawBook(AVGApp):
         self.configuration[y+1][x+1] = temp[y][x]
   
   
-  def setNewDrawing(self, j, i, n):
+  def setNewDrawing(self, j, i):
     '''
     updates the configuration list with a new image & updates the file and the scene
     arguments: j, i: coordinates in the matrix, n: file name
     '''
     # set the number of the new drawing on the correct place in the matrix
-    self.configuration[j][i] = n;
+    self.configuration[j][i] = self.counter;
     # save this configuration
     self.save()
     # get the rectangle where the new drawing should be shown now
@@ -163,7 +163,7 @@ class DrawBook(AVGApp):
     # delete this rectangle
     rectangle.unlink()
     # put the drawing on the place where the rectangle was
-    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter+1) + ".jpg", str(self.counter+1),
+    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter) + ".jpg", str(self.counter+1),
                 self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2)
     # set the counter up and enlarge if necessary
     self.counterUp()

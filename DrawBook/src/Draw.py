@@ -22,7 +22,7 @@ import math
 class Draw(object):
   
   
-  def __init__(self, j, i, player, imageWidth, screenWidth, screenHeight, imageNumber, folder, drawBook):
+  def __init__(self, j, i, player, imageWidth, screenWidth, screenHeight, folder, drawBook):
     '''
     loads the tool bar and the draw surface
     '''
@@ -31,7 +31,6 @@ class Draw(object):
     self.player = player # libavg player
     self.imageWidth = imageWidth # width of the new image
     self.screenWidth = screenWidth # width of the screen
-    self.imageNumber = imageNumber # number that of the new drawing
     self.folder = folder # folder where the new drawing should be stored
     self.drawBook = drawBook # instance of the draw book
     self.cursorIDs = {} # dictionary of all the touches in use with their last position
@@ -147,8 +146,8 @@ class Draw(object):
     '''
     # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
     if(self.drawCanvas.getRootNode().getNumChildren() > 1):
-      avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.imageNumber) + ".jpg")
-      self.drawBook.setNewDrawing(self.j, self.i, self.imageNumber)
+      avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
+      self.drawBook.setNewDrawing(self.j, self.i)
     self.exit()
   
   

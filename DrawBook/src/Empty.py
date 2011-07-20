@@ -16,7 +16,7 @@ import Draw
 class Empty(object):
   
   
-  def __init__(self, j, i, parentNode, x, y, width, height, player, imageWidth, screenWidth, screenHeight, imageNumber, folder, drawBook):
+  def __init__(self, j, i, parentNode, x, y, width, height, player, imageWidth, screenWidth, screenHeight, folder, drawBook):
     '''
     draws the rectangle & sets event handler
     '''
@@ -26,7 +26,6 @@ class Empty(object):
     self.imageWidth = imageWidth # width of the image
     self.screenWidth = screenWidth # width of the screen
     self.screenHeight = screenHeight # height of the screen
-    self.imageNumber = imageNumber # number of the new drawing
     self.folder = folder # folder where the new drawing should be saved
     self.drawBook = drawBook # instance of the draw book
     
@@ -46,5 +45,4 @@ class Empty(object):
     '''
     start to draw on this position
     '''
-    Draw.Draw(self.j, self.i, self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.imageNumber, self.folder,
-              self.drawBook)
+    Draw.Draw(self.j, self.i, self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.folder, self.drawBook)
