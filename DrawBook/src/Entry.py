@@ -27,7 +27,7 @@ class Entry(object):
     self.screenHeight = screenHeight # height of the screen
     
     self.thumb = avg.ImageNode(id=id, href=path, parent=parentNode, pos=(x, y), size=(imageWidth*factor, screenHeight*factor))
-    self.thumb.setEventHandler(avg.CURSORDOWN, avg.MOUSE, self.thumbOnTouch)
+    self.thumb.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.thumbOnTouch)
   
   
   def thumbOnTouch(self, event):
