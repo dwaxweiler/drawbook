@@ -153,29 +153,36 @@ class Draw(object):
     '''
     self.erase = False
     
-    self.colorBar = avg.DivNode(id="colors", parent=self.player.getRootNode()) # container for colors
-    avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.colorBar, pos=(0, 0), size=(self.screenWidth, self.screenHeight), strokewidth=0)
+    self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
+    avg.RectNode( fillcolor="FFFFFF", fillopacity=1.0, parent=self.colorBar, pos=(0, 0), size=(self.screenWidth, self.screenHeight), strokewidth=0 ) # coler choose background
 
-    red = avg.RectNode(fillcolor="ff0000", fillopacity=1.0, parent=self.colorBar, pos=(0, 0), size=(self.n, self.n), strokewidth=0)
-    red.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorRed)
+    self.setColorRec( );
 
-    black = avg.RectNode(fillcolor="000000", fillopacity=1.0, parent=self.colorBar, pos=(0, self.n), size=(self.n, self.n), strokewidth=0)
-    black.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorBlack)
+
+  def setColorRec ( self ):
+    ''' fill the colorBar with different colors'''
+    countHeight = self.n
+    countWidth = self.n
+    colorCount = 0
+    self.drawBook.folder
+    # color silver, red, fuchsia, lime, yellow, blue, aqua
+    colors = ("c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff")
+    self.colorRecArray = [0,1,2,3,4,5,6]
     
-    lime = avg.RectNode(fillcolor="00ff00", fillopacity=1.0, parent=self.colorBar, pos=(0, self.n+self.n), size=(self.n, self.n), strokewidth=0)
-    lime.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorLime)
- 
-  def colorRed (self, event):
-    self.color = "ff0000"
-    self.colorBar.unlink()
-   
-  def colorBlack (self, event):
-    self.color = "000000"
-    self.colorBar.unlink() 
+    while countHeight < self.screenHeight :           
+      while (countWidth < self.screenWidth) & (colorCount < 6):
+        self.colorRecArray[colorCount] = avg.RectNode(fillcolor=colors[colorCount], fillopacity=1.0, parent=self.colorBar, pos=(countHeight, countWidth), size=(self.n, self.n), strokewidth=0)
+        self.colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorChoose)
+        countWidth = countWidth + self.n
+        colorCount = colorCount + 1      
+      countHeight = countHeight + self.n
+
     
-  def colorLime (self, event):
-    self.color = "00ff00"
-    self.colorBar.unlink()  
+  def colorChoose ( self, event ):
+    '''sets the self.color to the color of the chosen rectangle'''
+    self.color = event.node.fillcolor
+    self.colorBar.unlink( )
+
       
   def eraser(self, event):
     '''
