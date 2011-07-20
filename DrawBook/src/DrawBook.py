@@ -20,18 +20,19 @@ import Entry, Empty
 class DrawBook(AVGApp):
   
   
-  def __init__(self, width, height, folder):
+  def __init__(self, folder):
     '''
     initializes the setting for the draw book
     arguments: width, height (screen resolution to run in full screen mode), relative path
     '''
-    self.height = height # height of the screen
-    self.width = width # width of the screen
-    self.imageWidth = width*0.9 # width of the image
+    self.player = avg.Player.get() # libavg player
+    Point2D = self.player.getScreenResolution() #get the resolution of the used screen
+    self.height = int(Point2D.y) # height of the screen
+    self.width = int(Point2D.x) # width of the screen
+    self.imageWidth = int(Point2D.x)*0.9 # width of the image
     self.folder = folder # path to the folder which contains the images
     self.counter = 0 # number of next drawing
-    self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration
-    self.player = avg.Player.get() # libavg player
+    self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration   
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
     #self.player.enableMultitouch() #uncomment this line to activate multitouch
     self.player.setResolution(True, self.width, self.height, 32)
@@ -206,7 +207,8 @@ class DrawBook(AVGApp):
 
 
 def main():
-  book = DrawBook(1440, 900, './')
+
+  book = DrawBook('./')
   book.start()
 
 if __name__ == '__main__':
