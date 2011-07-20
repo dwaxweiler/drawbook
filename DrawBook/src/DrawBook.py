@@ -34,6 +34,7 @@ class DrawBook(AVGApp):
     self.counter = 0 # number of next drawing
     self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration   
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
+    #self.player.enableMultitouch() #uncomment this line to activate multitouch
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
     self.configuration = []; # list containing the configuration of the scene (sublist for each row)
@@ -177,8 +178,9 @@ class DrawBook(AVGApp):
     self.load()
     self.draw()
     self.player.play()
-    if(self.player.isMultitouchAvailable()):  #detects if the system supportes multitouch
-      self.player.enableMultitouch()          #activate multitouch
+    #RuntimeError: Must call Player.play() before isMultitouchAvailable().
+    #if(self.player.isMultitouchAvailable()):  #detects if the system supportes multitouch
+    #  self.player.enableMultitouch()          #activate multitouch
 
   
   def scrolling(self):
