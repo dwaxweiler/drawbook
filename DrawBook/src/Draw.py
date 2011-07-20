@@ -25,11 +25,13 @@ class Draw(object):
     '''
     loads the tool bar and the draw surface
     '''
+    self.color  = "000000" # for pencil color
     self.j = j # y-position of the new drawing in the matrix
     self.i = i # x-position of the new drawing in the matrix
     self.player = player # libavg player
     self.imageWidth = imageWidth # width of the new image
     self.screenWidth = screenWidth # width of the screen
+    self.screenHeight = screenHeight
     self.folder = folder # folder where the new drawing should be stored
     self.drawBook = drawBook # instance of the draw book
     self.cursorIDs = {} # dictionary of all the touches in use with their last position
@@ -42,6 +44,7 @@ class Draw(object):
                  size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # pace the icons with their functionality on the tool bar
     n = screenWidth-imageWidth-10
+    self.n = n
     # webcam button
     webcam = avg.ImageNode(href="img/webcam.png", parent=self.toolBar, pos=(5, 50), size=(n, n))
     webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
@@ -57,7 +60,7 @@ class Draw(object):
     # cancel button
     cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 650), size=(n, n))
     cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
-    
+
     # create canvas for the drawing surface
     self.drawCanvas = player.loadCanvasString("<canvas id=\"drawing\" width=\""+str(imageWidth)+"\" height=\""+str(screenHeight)+"\"></canvas>")
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
@@ -120,7 +123,7 @@ class Draw(object):
     if self.erase:
       color = "FFFFFF"
     else:
-      color = "000000"
+      color = self.color
     avg.CircleNode(fillcolor=color, fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
   
   
@@ -132,7 +135,7 @@ class Draw(object):
     if self.erase:
       color = "FFFFFF"
     else:
-      color = "000000"
+      color = self.color
     avg.LineNode(color=color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
   
   
@@ -149,8 +152,31 @@ class Draw(object):
     event handler function that selects pencil tool
     '''
     self.erase = False
-  
-  
+    
+    self.colorBar = avg.DivNode(id="colors", parent=self.player.getRootNode()) # container for colors
+    avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.colorBar, pos=(0, 0), size=(self.screenWidth, self.screenHeight), strokewidth=0)
+
+    red = avg.RectNode(fillcolor="ff0000", fillopacity=1.0, parent=self.colorBar, pos=(0, 0), size=(self.n, self.n), strokewidth=0)
+    red.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorRed)
+
+    black = avg.RectNode(fillcolor="000000", fillopacity=1.0, parent=self.colorBar, pos=(0, self.n), size=(self.n, self.n), strokewidth=0)
+    black.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorBlack)
+    
+    lime = avg.RectNode(fillcolor="00ff00", fillopacity=1.0, parent=self.colorBar, pos=(0, self.n+self.n), size=(self.n, self.n), strokewidth=0)
+    lime.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorLime)
+ 
+  def colorRed (self, event):
+    self.color = "ff0000"
+    self.colorBar.unlink()
+   
+  def colorBlack (self, event):
+    self.color = "000000"
+    self.colorBar.unlink() 
+    
+  def colorLime (self, event):
+    self.color = "00ff00"
+    self.colorBar.unlink()  
+      
   def eraser(self, event):
     '''
     event handler function that selects eraser tool
