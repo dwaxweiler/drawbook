@@ -4,7 +4,6 @@ DrawBook
 To do:
 - add possibility to change colour
 - add possibility to change size
-- add possibility to erase (instead of pencil icon -> eraser icon, depending on mode)
 - add possibility to take webcam photos
 - center toolbar icons vertically
 Bugs:
@@ -34,6 +33,7 @@ class Draw(object):
     self.folder = folder # folder where the new drawing should be stored
     self.drawBook = drawBook # instance of the draw book
     self.cursorIDs = {} # dictionary of all the touches in use with their last position
+    self.erase = False # do not start with eraser
     
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
@@ -45,14 +45,17 @@ class Draw(object):
     # webcam button
     webcam = avg.ImageNode(href="img/webcam.png", parent=self.toolBar, pos=(5, 50), size=(n, n))
     webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
-    # tool button
+    # pencil button
     tool = avg.ImageNode(href="img/pencil.png", parent=self.toolBar, pos=(5, 200), size=(n, n))
     tool.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
+    # eraser button
+    eraser = avg.ImageNode(href="img/rubber.png", parent=self.toolBar, pos=(5, 350), size=(n, n))
+    eraser.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.eraser)
     # save button
-    save = avg.ImageNode(href="img/apply.png", parent=self.toolBar, pos=(5, 350), size=(n, n))
+    save = avg.ImageNode(href="img/apply.png", parent=self.toolBar, pos=(5, 500), size=(n, n))
     save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
     # cancel button
-    cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 500), size=(n, n))
+    cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 650), size=(n, n))
     cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
     
     # create canvas for the drawing surface
@@ -114,7 +117,11 @@ class Draw(object):
     draws a circle node on the given position
     arguments: x, y: position
     '''
-    avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
+    if self.erase:
+      color = "FFFFFF"
+    else:
+      color = "000000"
+    avg.CircleNode(fillcolor=color, fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
   
   
   def drawLineNode(self, x1, y1, x2, y2):
@@ -122,7 +129,11 @@ class Draw(object):
     draws a line node between the two given positions
     arguments: x1, y1: start position; x2, y2: end position
     '''
-    avg.LineNode(color="000000", parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
+    if self.erase:
+      color = "FFFFFF"
+    else:
+      color = "000000"
+    avg.LineNode(color=color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
   
   
   def webcam(self, event):
@@ -137,7 +148,14 @@ class Draw(object):
     '''
     event handler function that selects pencil tool
     '''
-    return 0
+    self.erase = False
+  
+  
+  def eraser(self, event):
+    '''
+    event handler function that selects eraser tool
+    '''
+    self.erase = True
   
   
   def save(self, event):
