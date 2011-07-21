@@ -38,6 +38,8 @@ class DrawBook(AVGApp):
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
     self.configuration = []; # list containing the configuration of the scene (sublist for each row)
+    self.leftmargin = 0
+    self.topmargin = 0
     
     # check if folder exists
     if not os.path.isdir(self.folder):
@@ -164,11 +166,31 @@ class DrawBook(AVGApp):
     # delete this rectangle
     rectangle.unlink()
     # put the drawing on the place where the rectangle was
-    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter) + ".jpg", str(self.counter+1),
+    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter) + ".jpg", "entr"+str(self.counter+1),
                 self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2)
     # set the counter up and enlarge if necessary
     self.counterUp()
-  
+	
+  def move(self, x_offset, y_offset):
+	'''
+	moves over the DrawBook, negative values move the view to the left/up
+	'''
+	if abs(x_offset) > self.leftmargin:
+		x_offset = x_offset/abs(x_offset)*self.leftmargin
+	if abs(y_offset) > self.topmargin:
+		y_offset = y_offset/abs(y_offset)*self.topmargin
+	for row in range(len(self.configuration)):
+		for col in range(len(self.configuration[row])):
+			num = self.configuration[row][col]
+			if num == str(0):
+				entr = self.player.getElementByID(str(col)+"x"+str(row))
+				entr.x = entr.x - x_offset
+				entr.y = entr.y - y_offset
+	for c in range(1,self.counter):
+		entr = self.player.getElementByID("entr"+str(c))
+		if isinstance(entr, avg.AreaNode):
+			entr.x = entr.x - x_offset
+			entr.y = entr.y - y_offset		
 
   def start(self):
     '''
