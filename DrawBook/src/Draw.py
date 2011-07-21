@@ -2,10 +2,10 @@
 DrawBook
 
 To do:
-- add possibility to change size
-- add possibility to take webcam photos
+
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
+- webcam maby not working; please test
 '''
 
 #!/usr/bin/env python
@@ -26,6 +26,7 @@ class Draw(object):
     self.color  = "000000" # for pencil color
     self.colorBarUnlink = True  # variable to prevent the bar to build twice
     self.sizeBarUnlink = True   # variable to prevent the bar to build twice
+    self.webcamUnlink = True    
     self.pencilSize = 10 # radius of the pencil
     self.j = j # y-position of the new drawing in the matrix
     self.i = i # x-position of the new drawing in the matrix
@@ -138,9 +139,30 @@ class Draw(object):
   def webcam(self, event):
     '''
     event handler function that starts the webcam and loads the image to the screen
-    '''
-    # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
-    return 0
+     # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
+    '''  
+    # save and cancle button from the toolbar are used ! 
+    if self.webcamUnlink == True:
+      self.camara = avg.CameraNode( id="camara", parent=self.player.getRootNode(), 
+        pos=(self.screenWidth - self.imageWidth,0), size=(self.imageWidth, self.screenHeight) , 
+        driver='directshow', device="", framerate=15, capturewidth=int(self.imageWidth), 
+        captureheight=int(self.screenHeight) ) #, pixelformat="RGB")
+      self.webcamUnlink = False
+      self.camara.play( )
+    
+      #self.camara.dumpCameras()       # Dumps a list of available cameras to the console.
+      #print self.camara.isAvailable() # Returns True if there is a working device that can deliver images attached to the CameraNode
+    
+  def webcamSnapshot(self): 
+    # is called in the save funktion !
+    self.camara.getBitmap()
+    # and set the taken picture as background
+    
+    
+  def webcamCancel(self):
+    if self.webcamUnlink == False:
+      self.camara.unlink( )
+      self.webcamUnlink = True
   
   
   def pencil(self, event):
@@ -222,12 +244,15 @@ class Draw(object):
     '''
     event handler function that saves the image and returns to the gallery
     '''
+    if self.webcamUnlink == False:
+      self.webcamSnapshot()
+    
     # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
     if(self.drawCanvas.getRootNode().getNumChildren() > 1):
       avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
       self.drawBook.setNewDrawing(self.j, self.i)
     self.exit()
-  
+
   
   def cancel(self, event):
     '''
@@ -240,10 +265,17 @@ class Draw(object):
     '''
     deletes everything related to drawing
     '''
-    self.toolBar.unlink()
-    self.drawingSurface.unlink()
-    self.colorBar.unlink( )
-    self.colorBarUnlink = True
-    self.sizeBar.unlink( )
-    self.sizeBarUnlink = True
-    self.player.deleteCanvas("drawing")
+    if self.webcamUnlink == False:
+      self.webcamCancel()
+    else:
+      self.toolBar.unlink()
+      self.drawingSurface.unlink()
+      
+      if self.colorBarUnlink == False:
+        self.colorBar.unlink( )
+        self.colorBarUnlink = True
+      if self.colorBarUnlink == False:
+        self.sizeBar.unlink( )
+        self.sizeBarUnlink = True
+  
+      self.player.deleteCanvas("drawing")
