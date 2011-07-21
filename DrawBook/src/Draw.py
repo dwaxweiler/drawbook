@@ -84,13 +84,13 @@ class Draw(object):
       parent=self.icons, pos=(0, 3*self.n), size=(self.n, self.n), strokewidth=0)
       
       save = avg.ImageNode(href="img/apply.png", parent=self.icons, pos=(0, 3*self.n), size=(self.n, self.n))
-      save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
+      save.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.save)
       # cancel button
       avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0,
       parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n), strokewidth=0)
       
       cancel = avg.ImageNode(href="img/cancel.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n))
-      cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
+      cancel.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.cancel)
 
 
   def creatDrawingSurface(self):    

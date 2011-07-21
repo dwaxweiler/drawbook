@@ -16,7 +16,7 @@ import Draw
 class Empty(object):
   
   
-  def __init__(self, j, i, parentNode, x, y, width, height, player, imageWidth, screenWidth, screenHeight, folder, drawBook):
+  def __init__(self,j, i, parentNode, x, y, width, height, player, imageWidth, screenWidth, screenHeight, folder, drawBook):
     '''
     draws the rectangle & sets event handler
     '''
@@ -28,10 +28,14 @@ class Empty(object):
     self.screenHeight = screenHeight # height of the screen
     self.folder = folder # folder where the new drawing should be saved
     self.drawBook = drawBook # instance of the draw book
+    self.parentNode = parentNode
+    self.moved = False
     
     # create container
     container = avg.DivNode(id=str(i)+"x"+str(j), parent=parentNode, pos=(x, y), size=(width, height))
     container.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
+    container.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.scroll)
+    container.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.release)
     # create white rectangle
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=container, pos=(0, 0), size=(width, height), strokewidth=0)
     # create info text
@@ -42,7 +46,40 @@ class Empty(object):
 
 
   def onTouch(self, event):
-    '''
-    start to draw on this position
-    '''
-    Draw.Draw(self.j, self.i, self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.folder, self.drawBook)
+    p = self.drawBook
+    if p.captureHolder is None:
+		p.captureHolder = event.cursorid
+		p.sc_offset_y = event.pos.y
+		p.sc_offset_x = event.pos.x
+		event.node.setEventCapture(event.cursorid)
+		p.touching = True
+		#p.player.setTimeout(p.selectiontime,self.startDrawing)
+	
+  def startDrawing(self):
+	'''
+	start to draw on this position
+	'''
+	if self.drawBook.scrolling or self.moved:
+		return
+	Draw.Draw(self.j, self.i, self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.folder, self.drawBook)
+  
+  def release(self,event):
+	p = self.drawBook
+	if event.cursorid == p.captureHolder:
+		p.sc_offset_x = 0
+		p.sc_offset_y = 0
+		event.node.releaseEventCapture(event.cursorid)
+		p.captureHolder = None
+	p.touching = False
+	p.scrolling = False
+	self.startDrawing()
+	self.moved = False
+	
+  def scroll(self, event):
+	p = self.drawBook
+	if event.cursorid == p.captureHolder and p.touching:
+		p.scrolling = True
+		self.moved = True
+		y_dist = event.pos.y - p.sc_offset_y
+		x_dist = event.pos.x - p.sc_offset_x
+		p.move(x_dist/10,y_dist/10)

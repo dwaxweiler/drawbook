@@ -40,6 +40,12 @@ class DrawBook(AVGApp):
     self.configuration = []; # list containing the configuration of the scene (sublist for each row)
     self.leftmargin = 0
     self.topmargin = 0
+    self.selectiontime = 1000
+    self.scrolling = False
+    self.touching = False
+    self.sc_offset_x = 0
+    self.sc_offset_y = 0
+    self.captureHolder = None
     
     # check if folder exists
     if not os.path.isdir(self.folder):
@@ -93,21 +99,25 @@ class DrawBook(AVGApp):
     '''
     # calculate y coordinate of first image
     y = (len(self.configuration)*(self.height/5+2)-2-self.height)/-2
+    self.leftmargin = abs(y)
     for i in range(len(self.configuration)):
       # calculate x coordinate of first image in each row
       x = (len(self.configuration[i])*(self.imageWidth/5+2)-2-self.width)/-2
+      if abs(x) > self.topmargin:
+		self.topmargin = abs(x)
       for j in range(len(self.configuration[i])):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
         if self.configuration[i][j] != 0 and os.path.isfile(path):
           # draw image if it exists
           Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y,
-                      self.width, self.height, self.imageWidth, 0.2)
+                      self.width, self.height, self.imageWidth, 0.2, self)
         else:
           # draw rectangle if there is a "0" or image does not exist
           Empty.Empty(i, j, self.masterDivNode, x, y, self.imageWidth/5, self.height/5, self.player, self.imageWidth, self.width,
                       self.height, self.folder + "/" + str(self.width) + "x" + str(self.height) + "/", self)
         x += self.imageWidth/5+2
       y += self.height/5+2
+    self.move(500,500)
   
   
   def counterUp(self):
@@ -167,7 +177,7 @@ class DrawBook(AVGApp):
     rectangle.unlink()
     # put the drawing on the place where the rectangle was
     Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter) + ".jpg", "entr"+str(self.counter+1),
-                self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2)
+                self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2,self)
     # set the counter up and enlarge if necessary
     self.counterUp()
 	
@@ -179,18 +189,9 @@ class DrawBook(AVGApp):
 		x_offset = x_offset/abs(x_offset)*self.leftmargin
 	if abs(y_offset) > self.topmargin:
 		y_offset = y_offset/abs(y_offset)*self.topmargin
-	for row in range(len(self.configuration)):
-		for col in range(len(self.configuration[row])):
-			num = self.configuration[row][col]
-			if num == str(0):
-				entr = self.player.getElementByID(str(col)+"x"+str(row))
-				entr.x = entr.x - x_offset
-				entr.y = entr.y - y_offset
-	for c in range(1,self.counter):
-		entr = self.player.getElementByID("entr"+str(c))
-		if isinstance(entr, avg.AreaNode):
-			entr.x = entr.x - x_offset
-			entr.y = entr.y - y_offset		
+	print("moving "+str(x_offset)+" and "+ str(y_offset))
+	self.masterDivNode.x = self.masterDivNode.x + x_offset
+	self.masterDivNode.y = self.masterDivNode.y + y_offset
 
   def start(self):
     '''
@@ -203,31 +204,6 @@ class DrawBook(AVGApp):
     #RuntimeError: Must call Player.play() before isMultitouchAvailable().
     #if(self.player.isMultitouchAvailable()):  #detects if the system supportes multitouch
     #  self.player.enableMultitouch()          #activate multitouch
-
-  
-  def scrolling(self):
-    '''
-    enables scrolling with event handlers (moves the master divNode)
-    '''
-    # -> last "Uebungsblatt (ListNode)" (but for touches)
-    self.masterDivNode.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.onTouch)
-    self.masterDivNode.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.touchRelease)  
-  
-  
-  def onTouch(self, event):
-      self.offset = (self.masterDivNode.pos[0],self.masterDivNode.pos[1])
-      event.masterDivNode.setEventCapture()
-      #self.player.setTimeout(1000, self.onTouchMotion(event))
-  
-  
-  def onTouchMotion (self, event):
-      if self.offset != None:
-          self.masterDivNode.pos = (self.offset[0] + event.x-self.offset[0], self.offset[1] + event.y-self.offset[1])
-  
-  
-  def touchRelease(self, event):
-      self.offset = None
-      event.masterDivNode.releaseEventCapture()
 
 
 
