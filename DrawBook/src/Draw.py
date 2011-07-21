@@ -246,12 +246,12 @@ class Draw(object):
     '''
     if self.webcamUnlink == False:
       self.webcamSnapshot()
-    
-    # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
-    if(self.drawCanvas.getRootNode().getNumChildren() > 1):
-      avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
-      self.drawBook.setNewDrawing(self.j, self.i)
-    self.exit()
+    else:
+      # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
+      if(self.drawCanvas.getRootNode().getNumChildren() > 1):
+        avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
+        self.drawBook.setNewDrawing(self.j, self.i)
+      self.exit()
 
   
   def cancel(self, event):
