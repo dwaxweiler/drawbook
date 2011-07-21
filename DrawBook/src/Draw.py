@@ -2,12 +2,12 @@
 DrawBook
 
 To do:
-- add possibility to change colour
 - add possibility to change size
 - add possibility to take webcam photos
 - center toolbar icons vertically
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
+- crashes when touching/clicking pencil button twice
 '''
 
 #!/usr/bin/env python
@@ -40,26 +40,26 @@ class Draw(object):
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
     # create the background of the tool bar
-    avg.RectNode(fillcolor="000000", fillopacity=1.0, 
-      parent=self.toolBar, pos=(0, 0), size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    avg.RectNode(fillcolor="000000", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
+                 size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    
     # pace the icons with their functionality on the tool bar
-    n = screenWidth-imageWidth-10
-    self.n = n
+    self.n = screenWidth-imageWidth-10
     # webcam button
-    webcam = avg.ImageNode(href="img/webcam.png", parent=self.toolBar, pos=(5, 50), size=(n, n))
+    webcam = avg.ImageNode(href="img/webcam.png", parent=self.toolBar, pos=(5, 50), size=(self.n, self.n))
     webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
     # pencil button
-    tool = avg.ImageNode(href="img/pencil.png", parent=self.toolBar, pos=(5, 200), size=(n, n))
+    tool = avg.ImageNode(href="img/pencil.png", parent=self.toolBar, pos=(5, 200), size=(self.n, self.n))
     self.tool = tool # for dynamic use of the pencil button position
     tool.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
     # eraser button
-    eraser = avg.ImageNode(href="img/rubber.png", parent=self.toolBar, pos=(5, 350), size=(n, n))
+    eraser = avg.ImageNode(href="img/eraser.png", parent=self.toolBar, pos=(5, 350), size=(self.n, self.n))
     eraser.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.eraser)
     # save button
-    save = avg.ImageNode(href="img/apply.png", parent=self.toolBar, pos=(5, 500), size=(n, n))
+    save = avg.ImageNode(href="img/apply.png", parent=self.toolBar, pos=(5, 500), size=(self.n, self.n))
     save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
     # cancel button
-    cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 650), size=(n, n))
+    cancel = avg.ImageNode(href="img/cancel.png", parent=self.toolBar, pos=(5, 650), size=(self.n, self.n))
     cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
 
     # create canvas for the drawing surface
