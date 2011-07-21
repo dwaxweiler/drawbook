@@ -178,8 +178,8 @@ class Draw(object):
     self.sizeBar.unlink( )
     self.sizeBarUnlink = True
     
-    self.colorBar.unlink( )
-    self.colorBarUnlink = True
+    self.colorBar.unlink( )     # have to be deleted if outsourced to another icon
+    self.colorBarUnlink = True  # have to be deleted if outsourced to another icon
     
   def colorChoose(self):  
     ''' sets the available colors and builds a container for them '''
@@ -208,8 +208,8 @@ class Draw(object):
     self.colorBar.unlink( )
     self.colorBarUnlink = True
 
-    self.sizeBar.unlink( )
-    self.sizeBarUnlink = True
+    self.sizeBar.unlink( )    # have to be deleted if outsourced to another icon
+    self.sizeBarUnlink = True # have to be deleted if outsourced to another icon
 
   def eraser(self, event):
     '''
@@ -242,4 +242,8 @@ class Draw(object):
     '''
     self.toolBar.unlink()
     self.drawingSurface.unlink()
+    self.colorBar.unlink( )
+    self.colorBarUnlink = True
+    self.sizeBar.unlink( )
+    self.sizeBarUnlink = True
     self.player.deleteCanvas("drawing")
