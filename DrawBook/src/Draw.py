@@ -162,7 +162,9 @@ class Draw(object):
     colorCount = 0
     
     while (colorCount < len(colorRecArray)): # draws one rectangle for every color; with the size of n
-      colorRecArray[colorCount] = avg.RectNode(fillcolor=colorRecArray[colorCount], fillopacity=1.0, parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y), size=(self.n, self.n), color = self.toolBarBackground.fillcolor, strokewidth=2)
+      colorRecArray[colorCount] = avg.RectNode(fillcolor=colorRecArray[colorCount], fillopacity=1.0, 
+          parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y), 
+          size=(self.n, self.n), color = self.toolBarBackground.fillcolor, strokewidth=2)
       colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setColor)
       countWidth = countWidth + self.n
       colorCount = colorCount + 1
