@@ -7,6 +7,7 @@ To do:
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
 - crashes when touching/clicking pencil button twice
+- colors are now not a line with the pencil icon anymore
 '''
 
 #!/usr/bin/env python
@@ -164,10 +165,13 @@ class Draw(object):
     self.drawBook.folder
     
     while (countWidth < self.screenWidth) & (colorCount < self.colorQuantity):
-      self.colorRecArray[colorCount] = avg.RectNode(fillcolor=self.colorRecArray[colorCount], fillopacity=1.0, parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y), size=(self.n, self.n), color = "000000", strokewidth=2)
+      self.colorRecArray[colorCount] = avg.RectNode(fillcolor=self.colorRecArray[colorCount], fillopacity=1.0,
+                                                    parent=self.colorBar,
+                                                    pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y),
+                                                    size=(self.n, self.n), color = "000000", strokewidth=2)
       self.colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorChoose)
       countWidth = countWidth + self.n
-      colorCount = colorCount + 1      
+      colorCount = colorCount + 1
 
     
   def colorChoose ( self, event ):
