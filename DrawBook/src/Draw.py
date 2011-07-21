@@ -35,7 +35,7 @@ class Draw(object):
     self.folder = folder # folder where the new drawing should be stored
     self.drawBook = drawBook # instance of the draw book
     self.cursorIDs = {} # dictionary of all the touches in use with their last position
-    self.erase = False # do not start with eraser
+    self.color = "000000" # start with black color
     
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
@@ -121,11 +121,7 @@ class Draw(object):
     draws a circle node on the given position
     arguments: x, y: position
     '''
-    if self.erase:
-      color = "FFFFFF"
-    else:
-      color = self.color
-    avg.CircleNode(fillcolor=color, fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
+    avg.CircleNode(fillcolor=self.color, fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
   
   
   def drawLineNode(self, x1, y1, x2, y2):
@@ -133,11 +129,7 @@ class Draw(object):
     draws a line node between the two given positions
     arguments: x1, y1: start position; x2, y2: end position
     '''
-    if self.erase:
-      color = "FFFFFF"
-    else:
-      color = self.color
-    avg.LineNode(color=color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
+    avg.LineNode(color=self.color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
   
   
   def webcam(self, event):
@@ -186,7 +178,7 @@ class Draw(object):
     '''
     event handler function that selects eraser tool
     '''
-    self.erase = True
+    self.color = "FFFFFF"
   
   
   def save(self, event):
