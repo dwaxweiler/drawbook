@@ -24,7 +24,9 @@ class Draw(object):
     loads the tool bar and the draw surface
     '''
     self.color  = "000000" # for pencil color
-    self.colorBarUnlink = True # 
+    self.colorBarUnlink = True  # variable to prevent the bar to build twice
+    self.sizeBarUnlink = True   # variable to prevent the bar to build twice
+    self.pencilSize = 10 # radius of the pencil
     self.j = j # y-position of the new drawing in the matrix
     self.i = i # x-position of the new drawing in the matrix
     self.player = player # libavg player
@@ -122,7 +124,7 @@ class Draw(object):
     draws a circle node on the given position
     arguments: x, y: position
     '''
-    avg.CircleNode(fillcolor=self.color, fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=10, strokewidth=0)
+    avg.CircleNode(fillcolor=self.color, fillopacity=1.0, parent=self.drawCanvas.getRootNode(), pos=(x, y), r=self.pencilSize, strokewidth=0)
   
   
   def drawLineNode(self, x1, y1, x2, y2):
@@ -130,7 +132,7 @@ class Draw(object):
     draws a line node between the two given positions
     arguments: x1, y1: start position; x2, y2: end position
     '''
-    avg.LineNode(color=self.color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=20)
+    avg.LineNode(color=self.color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=self.pencilSize*2)
   
   
   def webcam(self, event):
@@ -146,8 +148,38 @@ class Draw(object):
     event handler function that selects pencil tool
     '''
     self.erase = False
-    self.colorChoose()
+    self.colorChoose()  # could be outsourced to another icon
+    self.sizeChoose()   # could be outsourced to another icon
     
+    
+  def sizeChoose(self):  
+    ''' sets the available sizes and builds a container for them '''
+    sizeCircleArray = [5, 10, 15, 20, 25, 30, 35, 40]
+    if self.sizeBarUnlink == True : # only build new sizeBar if previous was unlinked
+      self.sizeBar = avg.DivNode( id="size", parent=self.player.getRootNode() ) # container for sizes
+      self.sizeBarUnlink = False
+
+    ''' fill the sizeBar with the given sizes '''
+    countWidth = 0
+    count = 0
+    
+    while (count < len(sizeCircleArray)): # draws one circle for every size
+      sizeCircleArray[count] = avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.sizeBar, 
+        pos=(self.screenWidth - self.imageWidth + countWidth + (self.n/2), self.tool.y + (self.n*2)), 
+        r=sizeCircleArray[count], color = self.toolBarBackground.fillcolor, strokewidth=5)
+
+      sizeCircleArray[count].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setSize)
+      countWidth = countWidth + self.n
+      count = count + 1
+    
+    
+  def setSize (self, event):
+    self.pencilSize = event.node.r
+    self.sizeBar.unlink( )
+    self.sizeBarUnlink = True
+    
+    self.colorBar.unlink( )
+    self.colorBarUnlink = True
     
   def colorChoose(self):  
     ''' sets the available colors and builds a container for them '''
@@ -176,6 +208,8 @@ class Draw(object):
     self.colorBar.unlink( )
     self.colorBarUnlink = True
 
+    self.sizeBar.unlink( )
+    self.sizeBarUnlink = True
 
   def eraser(self, event):
     '''
