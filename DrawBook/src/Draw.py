@@ -70,9 +70,12 @@ class Draw(object):
     self.drawCanvas = player.loadCanvasString("<canvas id=\"drawing\" width=\""+str(imageWidth)+"\" height=\""+str(screenHeight)+"\"></canvas>")
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
                  pos=(0, 0), size=(imageWidth, screenHeight), strokewidth=0)
+    self.creatDrawingSurface()
+
+  def creatDrawingSurface(self):    
     # load canvas in the scene
-    self.drawingSurface = avg.ImageNode(id="surface", href="canvas:drawing", parent=player.getRootNode(),
-                                 pos=(screenWidth-imageWidth, 0), size=(imageWidth, screenHeight))
+    self.drawingSurface = avg.ImageNode(id="surface", href="canvas:drawing", parent=self.player.getRootNode(),
+                                 pos=(self.screenWidth-self.imageWidth, 0), size=(self.imageWidth, self.screenHeight))
     # set event handlers
     self.drawingSurface.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.startDrawing)
     self.drawingSurface.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.doDrawing)
@@ -155,9 +158,12 @@ class Draw(object):
     
   def webcamSnapshot(self): 
     # is called in the save funktion !
-    self.camara.getBitmap()
-    # and set the taken picture as background
-    
+    # take snapshot of the webcam and sets the picture as background
+    avg.ImageNode(self.camara.getBitmap(), parent=self.drawCanvas.getRootNode(), 
+      pos=(self.screenWidth - self.imageWidth,0), 
+      size=(self.imageWidth, self.screenHeight), strokewidth=0)
+    self.drawingSurface.unlink() #i think the draw surface have to be rebuild so u can draw on the new picture
+    self.creatDrawingSurface()
     
   def webcamCancel(self):
     if self.webcamUnlink == False:
