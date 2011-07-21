@@ -153,7 +153,7 @@ class Draw(object):
     ''' sets the available colors and builds a container for them '''
     # color silver, red, fuchsia, lime, yellow, blue, aqua, black
     colorRecArray = ["c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff", "000000"]
-    if self.colorBarUnlink == True : # only build new colorBar if previous is unlink
+    if self.colorBarUnlink == True : # only build new colorBar if previous was unlinked
       self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
       self.colorBarUnlink = False
 
