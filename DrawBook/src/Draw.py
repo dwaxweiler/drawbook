@@ -40,8 +40,8 @@ class Draw(object):
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
     # create the background of the tool bar
-    avg.RectNode(fillcolor="000000", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
-                 size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    avg.RectNode(fillcolor="000000", fillopacity=1.0, 
+      parent=self.toolBar, pos=(0, 0), size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # pace the icons with their functionality on the tool bar
     n = screenWidth-imageWidth-10
     self.n = n
@@ -50,6 +50,7 @@ class Draw(object):
     webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
     # pencil button
     tool = avg.ImageNode(href="img/pencil.png", parent=self.toolBar, pos=(5, 200), size=(n, n))
+    self.tool = tool # for dynamic use of the pencil button position
     tool.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
     # eraser button
     eraser = avg.ImageNode(href="img/rubber.png", parent=self.toolBar, pos=(5, 350), size=(n, n))
@@ -153,29 +154,26 @@ class Draw(object):
     '''
     self.erase = False
     
-    self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
-    avg.RectNode( fillcolor="FFFFFF", fillopacity=1.0, parent=self.colorBar, pos=(0, 0), size=(self.screenWidth, self.screenHeight), strokewidth=0 ) # coler choose background
+    # color choose
+    # color silver, red, fuchsia, lime, yellow, blue, aqua, black
+    self.colorRecArray = ["c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff", "000000"]
+    self.colorQuantity = 8
 
+    self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
     self.setColorRec( );
 
 
   def setColorRec ( self ):
     ''' fill the colorBar with different colors'''
-    countHeight = self.n
-    countWidth = self.n
+    countWidth = 0
     colorCount = 0
     self.drawBook.folder
-    # color silver, red, fuchsia, lime, yellow, blue, aqua
-    colors = ("c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff")
-    self.colorRecArray = [0,1,2,3,4,5,6]
     
-    while countHeight < self.screenHeight :           
-      while (countWidth < self.screenWidth) & (colorCount < 6):
-        self.colorRecArray[colorCount] = avg.RectNode(fillcolor=colors[colorCount], fillopacity=1.0, parent=self.colorBar, pos=(countHeight, countWidth), size=(self.n, self.n), strokewidth=0)
-        self.colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorChoose)
-        countWidth = countWidth + self.n
-        colorCount = colorCount + 1      
-      countHeight = countHeight + self.n
+    while (countWidth < self.screenWidth) & (colorCount < self.colorQuantity):
+      self.colorRecArray[colorCount] = avg.RectNode(fillcolor=self.colorRecArray[colorCount], fillopacity=1.0, parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y), size=(self.n, self.n), color = "000000", strokewidth=2)
+      self.colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorChoose)
+      countWidth = countWidth + self.n
+      colorCount = colorCount + 1      
 
     
   def colorChoose ( self, event ):
