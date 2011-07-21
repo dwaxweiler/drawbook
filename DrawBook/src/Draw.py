@@ -45,6 +45,7 @@ class Draw(object):
       parent=self.toolBar, pos=(0, 0),size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # container that holds all the icons
     icons = avg.DivNode(id="icons", parent=self.toolBar, pos=(5, 5))
+    self.icons = icons
     # pace the icons with their functionality on the tool bar
     self.n = screenWidth-imageWidth-10
     # webcam button
@@ -57,12 +58,7 @@ class Draw(object):
     # eraser button
     eraser = avg.ImageNode(href="img/eraser.png", parent=icons, pos=(0, 2*self.n), size=(self.n, self.n))
     eraser.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.eraser)
-    # save button
-    save = avg.ImageNode(href="img/apply.png", parent=icons, pos=(0, 3*self.n), size=(self.n, self.n))
-    save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
-    # cancel button
-    cancel = avg.ImageNode(href="img/cancel.png", parent=icons, pos=(0, 4*self.n), size=(self.n, self.n))
-    cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
+    self.canelSaveButton()
     # center the icons vertically
     icons.y = (self.screenHeight - 5*self.n) / 2
     
@@ -71,6 +67,31 @@ class Draw(object):
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
                  pos=(0, 0), size=(imageWidth, screenHeight), strokewidth=0)
     self.creatDrawingSurface()
+
+
+  def canelSaveButton(self):
+    
+    if self.webcamUnlink == False:
+      # save button
+      save = avg.ImageNode(href="img/applycam.png", parent=self.icons, pos=(0, 3*self.n), size=(self.n, self.n))
+      save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
+      # cancel button
+      cancel = avg.ImageNode(href="img/cancelcam.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n))
+      cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
+    else:
+      # save button
+      avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0,
+      parent=self.icons, pos=(0, 3*self.n), size=(self.n, self.n), strokewidth=0)
+      
+      save = avg.ImageNode(href="img/apply.png", parent=self.icons, pos=(0, 3*self.n), size=(self.n, self.n))
+      save.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
+      # cancel button
+      avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0,
+      parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n), strokewidth=0)
+      
+      cancel = avg.ImageNode(href="img/cancel.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n))
+      cancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
+
 
   def creatDrawingSurface(self):    
     # load canvas in the scene
@@ -144,17 +165,18 @@ class Draw(object):
     event handler function that starts the webcam and loads the image to the screen
      # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
     '''  
-    # save and cancle button from the toolbar are used ! 
     if self.webcamUnlink == True:
       self.camara = avg.CameraNode( id="camara", parent=self.player.getRootNode(), 
         pos=(self.screenWidth - self.imageWidth,0), size=(self.imageWidth, self.screenHeight) , 
         driver='directshow', device="", framerate=15, capturewidth=int(self.imageWidth), 
         captureheight=int(self.screenHeight) ) #, pixelformat="RGB")
       self.webcamUnlink = False
+      self.canelSaveButton( ) # swich the save and cancel button
       self.camara.play( )
     
       #self.camara.dumpCameras()       # Dumps a list of available cameras to the console.
       #print self.camara.isAvailable() # Returns True if there is a working device that can deliver images attached to the CameraNode
+    
     
   def webcamSnapshot(self): 
     # is called in the save funktion !
@@ -164,11 +186,16 @@ class Draw(object):
       size=(self.imageWidth, self.screenHeight), strokewidth=0)
     self.drawingSurface.unlink() #i think the draw surface have to be rebuild so u can draw on the new picture
     self.creatDrawingSurface()
+    self.camara.unlink()
+    self.webcamUnlink = True
+    self.canelSaveButton( )
+    
     
   def webcamCancel(self):
     if self.webcamUnlink == False:
       self.camara.unlink( )
       self.webcamUnlink = True
+      self.canelSaveButton( )
   
   
   def pencil(self, event):
