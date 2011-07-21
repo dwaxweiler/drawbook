@@ -7,7 +7,6 @@ To do:
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
 - crashes when touching/clicking pencil button twice
-- colors are now not a line with the pencil icon anymore
 '''
 
 #!/usr/bin/env python
@@ -26,6 +25,7 @@ class Draw(object):
     loads the tool bar and the draw surface
     '''
     self.color  = "000000" # for pencil color
+    self.colorBarUnlink = True # 
     self.j = j # y-position of the new drawing in the matrix
     self.i = i # x-position of the new drawing in the matrix
     self.player = player # libavg player
@@ -35,13 +35,12 @@ class Draw(object):
     self.folder = folder # folder where the new drawing should be stored
     self.drawBook = drawBook # instance of the draw book
     self.cursorIDs = {} # dictionary of all the touches in use with their last position
-    self.color = "000000" # start with black color
     
     # create a container for all the tool bar elements
     self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
     # create the background of the tool bar
-    avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
-                 size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    self.toolBarBackground = avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, 
+      parent=self.toolBar, pos=(0, 0),size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # container that holds all the icons
     icons = avg.DivNode(id="icons", parent=self.toolBar, pos=(5, 5))
     # pace the icons with their functionality on the tool bar
@@ -148,38 +147,35 @@ class Draw(object):
     event handler function that selects pencil tool
     '''
     self.erase = False
+    self.colorChoose()
     
-    # color choose
+    
+  def colorChoose(self):  
+    ''' sets the available colors and builds a container for them '''
     # color silver, red, fuchsia, lime, yellow, blue, aqua, black
-    self.colorRecArray = ["c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff", "000000"]
-    self.colorQuantity = 8
+    colorRecArray = ["c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff", "000000"]
+    if self.colorBarUnlink == True : # only build new colorBar if previous is unlink
+      self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
+      self.colorBarUnlink = False
 
-    self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
-    self.setColorRec( );
-
-
-  def setColorRec ( self ):
-    ''' fill the colorBar with different colors'''
+    ''' fill the colorBar with the given colors '''
     countWidth = 0
     colorCount = 0
-    self.drawBook.folder
     
-    while (countWidth < self.screenWidth) & (colorCount < self.colorQuantity):
-      self.colorRecArray[colorCount] = avg.RectNode(fillcolor=self.colorRecArray[colorCount], fillopacity=1.0,
-                                                    parent=self.colorBar,
-                                                    pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y),
-                                                    size=(self.n, self.n), color = "000000", strokewidth=2)
-      self.colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.colorChoose)
+    while (colorCount < len(colorRecArray)): # draws one rectangle for every color; with the size of n
+      colorRecArray[colorCount] = avg.RectNode(fillcolor=colorRecArray[colorCount], fillopacity=1.0, parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y), size=(self.n, self.n), color = self.toolBarBackground.fillcolor, strokewidth=2)
+      colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setColor)
       countWidth = countWidth + self.n
       colorCount = colorCount + 1
 
     
-  def colorChoose ( self, event ):
-    '''sets the self.color to the color of the chosen rectangle'''
+  def setColor ( self, event ):
+    ''' sets the self.color to the color of the chosen rectangle '''
     self.color = event.node.fillcolor
     self.colorBar.unlink( )
+    self.colorBarUnlink = True
 
-      
+
   def eraser(self, event):
     '''
     event handler function that selects eraser tool
