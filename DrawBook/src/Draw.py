@@ -6,7 +6,6 @@ To do:
 - add possibility to take webcam photos
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
-- crashes when touching/clicking pencil button twice
 '''
 
 #!/usr/bin/env python
