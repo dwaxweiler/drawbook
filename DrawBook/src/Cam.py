@@ -2,7 +2,6 @@
 DrawBook
 
 To do:
-
 Bugs:
 - webcam is not working
 '''

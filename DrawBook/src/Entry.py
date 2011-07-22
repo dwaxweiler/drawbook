@@ -2,8 +2,6 @@
 DrawBook
 
 To do:
-- perhaps show a smooth overlay "Touch to return/go back" after a few seconds
-- change from MOUSE to TOUCH
 Bugs:
 '''
 

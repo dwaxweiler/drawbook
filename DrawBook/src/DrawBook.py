@@ -2,8 +2,8 @@
 DrawBook
 
 To do:
-- test enlarging (adding more free space)
 Bugs:
+- enlarging -> crash
 '''
 
 #!/usr/bin/env python
