@@ -12,7 +12,7 @@ Bugs:
 # -*- coding: utf-8 -*-
 
 from libavg import avg, LinearAnim
-import math
+import math, Cam
 
 
 
@@ -27,7 +27,6 @@ class Draw(object):
     self.oldColor = self.color        # previous draw color
     self.colorBarUnlink = True        # variable to prevent the bar to build twice
     self.sizeBarUnlink = True         # variable to prevent the bar to build twice
-    self.webcamUnlink = True    
     self.size = 10                    # size of the pencil or eraser (radius)
     self.j = j                        # y-position of the new drawing in the matrix
     self.i = i                        # x-position of the new drawing in the matrix
@@ -49,9 +48,8 @@ class Draw(object):
     self.icons = icons
     # pace the icons with their functionality on the tool bar
     self.n = screenWidth-imageWidth-10
-    # webcam button
-    webcam = avg.ImageNode(href="img/webcam.png", parent=icons, pos=(0, 0), size=(self.n, self.n))
-    webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
+    # webcam button -> calls the camclass
+    Cam.Cam(self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.icons,self.toolBar, self.n)
     # pencil button
     tool = avg.ImageNode(href="img/pencil.png", parent=icons, pos=(0, self.n), size=(self.n, self.n))
     self.tool = tool # for dynamic use of the pencil button position
@@ -63,7 +61,12 @@ class Draw(object):
     # eraser button
     eraser = avg.ImageNode(href="img/eraser.png", parent=icons, pos=(0, 3*self.n), size=(self.n, self.n))
     eraser.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.eraser)
-    self.canelSaveButton()
+    # save button
+    save = avg.ImageNode(href="img/apply.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n))
+    save.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.save)
+    # cancel button
+    cancel = avg.ImageNode(href="img/cancel.png", parent=self.icons, pos=(0, 5*self.n), size=(self.n, self.n))
+    cancel.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.cancel)
     # center the icons vertically
     icons.y = (self.screenHeight - 6*self.n) / 2
     
@@ -72,29 +75,7 @@ class Draw(object):
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
                  pos=(0, 0), size=(imageWidth, screenHeight), strokewidth=0)
     self.createDrawingSurface()
-    # create a container for cam elements
-    self.camIcons = avg.DivNode(id="camIcons", parent=self.toolBar, pos=(5, 5))
-
-  def canelSaveButton(self):
     
-    #if self.webcamUnlink == False: # if the cam picture is shown replace the icons
-      
-    
-
-    #else: # if not shown, draw the old images
-      # save button
-      #avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0,
-      #parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n), strokewidth=0)
-      
-      save = avg.ImageNode(href="img/apply.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n))
-      save.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.save)
-      # cancel button
-      #avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0,
-      #parent=self.icons, pos=(0, 5*self.n), size=(self.n, self.n), strokewidth=0)
-      
-      self.cancelIcon = avg.ImageNode(href="img/cancel.png", parent=self.icons, pos=(0, 5*self.n), size=(self.n, self.n))
-      self.cancelIcon.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.cancel)
-
 
   def createDrawingSurface(self):    
     # load canvas in the scene
@@ -163,59 +144,7 @@ class Draw(object):
     '''
     avg.LineNode(color=self.color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=self.size*2)
   
-  
-  def webcam(self, event):
-    '''
-    event handler function that starts the webcam and loads the image to the screen
-    http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
-    '''
-    if self.webcamUnlink == True:
-      self.camara = avg.CameraNode( id="camara", parent=self.player.getRootNode(), 
-        pos=(self.screenWidth - self.imageWidth,0), size=(self.imageWidth, self.screenHeight) , 
-        driver='directshow', device="", framerate=15, capturewidth=int(self.imageWidth), 
-        captureheight=int(self.screenHeight) ) #, pixelformat="RGB")
-      self.webcamUnlink = False
-      
-      
-      self.icons.opacity = 0
-      self.camIcons.opacity = 1
-      
-      # save button
-      self.camIconSave = avg.ImageNode(href="img/applycam.png", parent=self.camIcons, pos=(0, 4*self.n), size=(self.n, self.n))
-      self.camIconSave.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
-      # cancel button
-      self.camIconCancel = avg.ImageNode(href="img/cancelcam.png", parent=self.camIcons, pos=(0, 5*self.n), size=(self.n, self.n))
-      self.camIconCancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
-      
-      #self.canelSaveButton( ) # swich the save and cancel button
-      self.camara.play( )
-    
-      #self.camara.dumpCameras()       # Dumps a list of available cameras to the console.
-      #print self.camara.isAvailable() # Returns True if there is a working device that can deliver images attached to the CameraNode
-    
-    
-  def webcamSnapshot(self): 
-    # is called in the save funktion !
-    # take snapshot of the webcam and sets the picture as background
-    avg.ImageNode(self.camara.getBitmap(), parent=self.drawCanvas.getRootNode(), 
-      pos=(self.screenWidth - self.imageWidth,0), 
-      size=(self.imageWidth, self.screenHeight), strokewidth=0)
-    self.drawingSurface.unlink() #i think the draw surface have to be rebuild so u can draw on the new picture
-    self.createDrawingSurface()
-    
-    self.exit()
-    #self.camara.unlink()
-    #self.webcamUnlink = True
-    #self.canelSaveButton( )
-    
-    
-  def webcamCancel(self):
-    if self.webcamUnlink == False:
-      self.camara.unlink( )
-      self.webcamUnlink = True
-      self.canelSaveButton( )
-  
-  
+ 
   def pencil(self, event):
     '''
     event handler function that selects pencil tool
@@ -255,7 +184,12 @@ class Draw(object):
     
     
   def setSize (self, event):
-    self.size = event.node.r
+    '''
+    sets the self.size to the color of the chosen cirle
+    '''
+    self.size = event.node.r # sets the new size
+    
+    #unlink the choosebars
     self.sizeBar.unlink( )
     self.sizeBarUnlink = True
     self.updateChooserNode()
@@ -291,6 +225,7 @@ class Draw(object):
     '''
     sets the self.color to the color of the chosen rectangle
     '''
+    #unlink the choosebars
     self.color = event.node.fillcolor
     self.colorBar.unlink( )
     self.colorBarUnlink = True
@@ -325,14 +260,11 @@ class Draw(object):
     '''
     event handler function that saves the image and returns to the gallery
     '''
-    if self.webcamUnlink == False:
-      self.webcamSnapshot()
-    else:
       # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
-      if(self.drawCanvas.getRootNode().getNumChildren() > 1):
-        avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
-        self.drawBook.setNewDrawing(self.j, self.i)
-      self.exit()
+    if(self.drawCanvas.getRootNode().getNumChildren() > 1):
+      avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
+      self.drawBook.setNewDrawing(self.j, self.i)
+    self.exit()
 
   
   def cancel(self, event):
@@ -346,24 +278,16 @@ class Draw(object):
     '''
     deletes everything related to drawing
     '''
-    if self.webcamUnlink == False: #if cam is activ, canel only the cam picture -> return to drwawing
-      self.webcamCancel()
-      
-      self.icons.opacity = 1
-      self.camIcons.opacity = 0
-      
-      #self.camIconCancel.unlink()
-      #self.camIconSave.unlink()
-      
-    else:
-      self.toolBar.unlink()
-      self.drawingSurface.unlink()
+    self.toolBar.unlink()
+    self.drawingSurface.unlink()
 
-      if self.colorBarUnlink == False:
-        self.colorBar.unlink( )
-        self.colorBarUnlink = True
-      if self.colorBarUnlink == False:
-        self.sizeBar.unlink( )
-        self.sizeBarUnlink = True
+    if self.colorBarUnlink == False:
+      self.colorBar.unlink( )
+      self.colorBarUnlink = True
+    if self.colorBarUnlink == False:
+      self.sizeBar.unlink( )
+      self.sizeBarUnlink = True
   
-      self.player.deleteCanvas("drawing")
+    self.player.deleteCanvas("drawing")
+  
+  
