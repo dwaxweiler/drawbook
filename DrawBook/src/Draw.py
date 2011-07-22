@@ -5,7 +5,6 @@ To do:
 
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
-- webcam may be not working; please test
 '''
 
 #!/usr/bin/env python
@@ -289,5 +288,3 @@ class Draw(object):
       self.sizeBarUnlink = True
   
     self.player.deleteCanvas("drawing")
-  
-  

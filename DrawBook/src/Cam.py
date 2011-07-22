@@ -1,7 +1,22 @@
+'''
+DrawBook
+
+To do:
+
+Bugs:
+- webcam may be not working; please test
+'''
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from libavg import avg
 
+
+
+
 class Cam(object):
+
 
   def __init__(self, player ,imageWidth, screenWidth, screenHeight, iconContainer, toolBar, n):
     # sets delivered arguments global
@@ -19,6 +34,7 @@ class Cam(object):
 
     webcam = avg.ImageNode(href="img/webcam.png", parent=iconContainer, pos=(0, 0), size=(self.n, self.n))
     webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
+
 
   def webcam(self,event):
     '''

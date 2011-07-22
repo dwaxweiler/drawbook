@@ -2,9 +2,7 @@
 DrawBook
 
 To do:
-- scrolling
 - test enlarging (adding more free space)
-- (add zoom effect also to the start of drawing)
 Bugs:
 '''
 
@@ -20,21 +18,22 @@ import Entry, Empty
 class DrawBook(AVGApp):
   
   
-  def __init__(self, folder):
+  def __init__(self, folder, enableMultitouch):
     '''
     initializes the setting for the draw book
     arguments: width, height (screen resolution to run in full screen mode), relative path
     '''
-    self.player = avg.Player.get() # libavg player
-    Point2D = self.player.getScreenResolution() #get the resolution of the used screen
-    self.height = int(Point2D.y) # height of the screen
-    self.width = int(Point2D.x) # width of the screen
-    self.imageWidth = int(Point2D.x)*0.9 # width of the image
-    self.folder = folder # path to the folder which contains the images
-    self.counter = 0 # number of next drawing
-    self.configFileName = 'drawbook_config.txt' # file name of the DrawBook configuration   
+    self.player = avg.Player.get()                # libavg player
+    Point2D = self.player.getScreenResolution()   # get the resolution of the used screen
+    self.height = int(Point2D.y)                  # height of the screen
+    self.width = int(Point2D.x)                   # width of the screen
+    self.imageWidth = int(Point2D.x)*0.9          # width of the image
+    self.folder = folder                          # path to the folder which contains the images
+    self.counter = 0                              # number of next drawing
+    self.configFileName = 'drawbook_config.txt'   # file name of the DrawBook configuration   
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
-    #self.player.enableMultitouch() #uncomment this line to activate multitouch
+    if enableMultitouch:
+      self.player.enableMultitouch()
     self.player.setResolution(True, self.width, self.height, 32)
     self.masterDivNode = avg.DivNode(parent=self.player.getRootNode()) # div node which contains all the images
     self.configuration = []; # list containing the configuration of the scene (sublist for each row)
@@ -104,7 +103,7 @@ class DrawBook(AVGApp):
       # calculate x coordinate of first image in each row
       x = (len(self.configuration[i])*(self.imageWidth/5+2)-2-self.width)/-2
       if abs(x) > self.leftmargin:
-		self.leftmargin = abs(x) #size of the left and right margins, see above
+        self.leftmargin = abs(x) #size of the left and right margins, see above
       for j in range(len(self.configuration[i])):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
         if self.configuration[i][j] != 0 and os.path.isfile(path):
@@ -179,40 +178,38 @@ class DrawBook(AVGApp):
                 self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2,self)
     # set the counter up and enlarge if necessary
     self.counterUp()
-	
+
+
   def move(self, x_offset, y_offset):
-	'''
-	moves over the DrawBook, negative values move the view to the left/up
-	'''
-	#calculate the new position of the DrawBook
-	newpos_x = self.masterDivNode.x + x_offset
-	newpos_y = self.masterDivNode.y + y_offset
-	#make sure we don't scroll beyond the borders of the DrawBook
-	if abs(newpos_x) > self.leftmargin:
-		newpos_x = (newpos_x/abs(newpos_x))*self.leftmargin
-	if abs(newpos_y) > self.topmargin:
-		newpos_y = (newpos_y/abs(newpos_y))*self.topmargin
-	#move the DrawBook
-	self.masterDivNode.x = newpos_x
-	self.masterDivNode.y = newpos_y
+    '''
+  	moves over the DrawBook, negative values move the view to the left/up
+  	'''
+    #calculate the new position of the DrawBook
+    newpos_x = self.masterDivNode.x + x_offset
+    newpos_y = self.masterDivNode.y + y_offset
+    #make sure we don't scroll beyond the borders of the DrawBook
+    if abs(newpos_x) > self.leftmargin:
+      newpos_x = (newpos_x/abs(newpos_x))*self.leftmargin
+    if abs(newpos_y) > self.topmargin:
+      newpos_y = (newpos_y/abs(newpos_y))*self.topmargin
+    #move the DrawBook
+    self.masterDivNode.x = newpos_x
+    self.masterDivNode.y = newpos_y
+
 
   def start(self):
     '''
     starts the draw book
     '''
-    #self.scrolling()
     self.load()
     self.draw()
     self.player.play()
-    #RuntimeError: Must call Player.play() before isMultitouchAvailable().
-    #if(self.player.isMultitouchAvailable()):  #detects if the system supportes multitouch
-    #  self.player.enableMultitouch()          #activate multitouch
 
 
 
 def main():
 
-  book = DrawBook('./')
+  book = DrawBook('./', False)
   book.start()
 
 if __name__ == '__main__':
