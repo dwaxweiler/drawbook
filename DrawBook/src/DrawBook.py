@@ -99,12 +99,12 @@ class DrawBook(AVGApp):
     '''
     # calculate y coordinate of first image
     y = (len(self.configuration)*(self.height/5+2)-2-self.height)/-2
-    self.leftmargin = abs(y)
+    self.topmargin = abs(y) #size of the top and bottom margins, we need this to not scroll beyond the DrawBook borders
     for i in range(len(self.configuration)):
       # calculate x coordinate of first image in each row
       x = (len(self.configuration[i])*(self.imageWidth/5+2)-2-self.width)/-2
       if abs(x) > self.topmargin:
-		self.topmargin = abs(x)
+		self.leftmargin = abs(x) #size of the left and right margins, see above
       for j in range(len(self.configuration[i])):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
         if self.configuration[i][j] != 0 and os.path.isfile(path):
@@ -185,13 +185,17 @@ class DrawBook(AVGApp):
 	'''
 	moves over the DrawBook, negative values move the view to the left/up
 	'''
-	if abs(x_offset) > self.leftmargin:
-		x_offset = x_offset/abs(x_offset)*self.leftmargin
-	if abs(y_offset) > self.topmargin:
-		y_offset = y_offset/abs(y_offset)*self.topmargin
-	print("moving "+str(x_offset)+" and "+ str(y_offset))
-	self.masterDivNode.x = self.masterDivNode.x + x_offset
-	self.masterDivNode.y = self.masterDivNode.y + y_offset
+	#calculate the new position of the DrawBook
+	newpos_x = self.masterDivNode.x + x_offset
+	newpos_y = self.masterDivNode.y + y_offset
+	#make sure we don't scroll beyond the borders of the DrawBook
+	if abs(newpos_x) > self.leftmargin:
+		newpos_x = (newpos_x/abs(newpos_x))*self.leftmargin
+	if abs(newpos_y) > self.topmargin:
+		newpos_y = (newpos_y/abs(newpos_y))*self.topmargin
+	#move the DrawBook
+	self.masterDivNode.x = newpos_x
+	self.masterDivNode.y = newpos_y
 
   def start(self):
     '''

@@ -53,7 +53,6 @@ class Empty(object):
 		p.sc_offset_x = event.pos.x
 		event.node.setEventCapture(event.cursorid)
 		p.touching = True
-		#p.player.setTimeout(p.selectiontime,self.startDrawing)
 	
   def startDrawing(self):
 	'''

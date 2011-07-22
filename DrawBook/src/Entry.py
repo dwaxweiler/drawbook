@@ -41,15 +41,12 @@ class Entry(object):
 		p.sc_offset_x = event.pos.x
 		event.node.setEventCapture(event.cursorid)
 		p.touching = True
-		#p.player.setTimeout(p.selectiontime,self.largeView)
-		print("clicked on entry")
 	
    
   def largeView(self):
     '''
     bring this image bigger to the front & set event handler to remove it
     '''
-    print("largeView called")
     if self.db.scrolling or self.moved:
 		return
     self.container = avg.DivNode(parent=self.parentNode, pos=(-self.parentNode.x, -self.parentNode.y), size=(self.screenWidth, self.screenHeight))
@@ -73,7 +70,6 @@ class Entry(object):
 
   def release(self,event):
 	p = self.db
-	print("release on entry called")
 	if event.cursorid == p.captureHolder:
 		p.sc_offset_x = 0
 		p.sc_offset_y = 0
@@ -81,7 +77,6 @@ class Entry(object):
 		p.captureHolder = None
 	p.touching = False
 	p.scrolling = False
-	print("starting large view")
 	self.largeView()
 	self.moved = False
 	
