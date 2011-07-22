@@ -2,7 +2,6 @@
 DrawBook
 
 To do:
-
 Bugs:
 - strange effects when user is drawing and moves with the finger pressed down right over the tool bar
 '''
@@ -24,8 +23,8 @@ class Draw(object):
     '''
     self.color  = "000000"            # draw color
     self.oldColor = self.color        # previous draw color
-    self.colorBarUnlink = True        # variable to prevent the bar to build twice
-    self.sizeBarUnlink = True         # variable to prevent the bar to build twice
+    self.colorBarUnlinked = True        # variable to prevent the bar to build twice
+    self.sizeBarUnlinked = True         # variable to prevent the bar to build twice
     self.size = 10                    # size of the pencil or eraser (radius)
     self.j = j                        # y-position of the new drawing in the matrix
     self.i = i                        # x-position of the new drawing in the matrix
@@ -43,16 +42,15 @@ class Draw(object):
     self.toolBarBackground = avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
                                           size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # container that holds all the icons
-    icons = avg.DivNode(id="icons", parent=self.toolBar, pos=(5, 5))
+    icons = avg.DivNode(id="icons", parent=self.toolBar, pos=(10, 0))
     self.icons = icons
     # pace the icons with their functionality on the tool bar
-    self.n = screenWidth-imageWidth-10
+    self.n = screenWidth-imageWidth-20
     # webcam button -> calls the camclass
     Cam.Cam(self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.icons,self.toolBar, self.n)
     # pencil button
-    tool = avg.ImageNode(href="img/pencil.png", parent=icons, pos=(0, self.n), size=(self.n, self.n))
-    self.tool = tool # for dynamic use of the pencil button position
-    tool.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
+    pencil = avg.ImageNode(href="img/pencil.png", parent=icons, pos=(0, self.n), size=(self.n, self.n))
+    pencil.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
     # color & size chooser
     self.chooserNode = avg.CircleNode(fillcolor=self.color, fillopacity=1.0, parent=icons, pos=(self.n/2, 2*self.n+self.n/2),
                                       r=self.size, strokewidth=3)
@@ -164,22 +162,28 @@ class Draw(object):
     sets the available sizes and builds a container for them
     '''
     sizeCircleArray = [5, 10, 15, 20, 25, 30, 35, 40]
-    if self.sizeBarUnlink == True : # only build new sizeBar if previous was unlinked
+    if self.sizeBarUnlinked: # only build new sizeBar if previous was unlinked
       self.sizeBar = avg.DivNode( id="size", parent=self.player.getRootNode() ) # container for sizes
-      self.sizeBarUnlink = False
+      '''avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0, parent=self.sizeBar,
+                   pos=(self.screenWidth-self.imageWidth, self.chooserNode.pos[1]), size=(len(sizeCircleArray)*self.n, self.n),
+                   strokewidth=0)'''
+      self.sizeBarUnlinked = False
 
-    # fill the sizeBar with the given sizes
-    countWidth = 0
-    count = 0
-    
-    while (count < len(sizeCircleArray)): # draws one circle for every size
-      sizeCircleArray[count] = avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.sizeBar, 
-        pos=(self.screenWidth - self.imageWidth + countWidth + (self.n/2), self.tool.y + (self.n*2)), 
-        r=sizeCircleArray[count], color = self.toolBarBackground.fillcolor, strokewidth=5)
-
-      sizeCircleArray[count].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setSize)
-      countWidth = countWidth + self.n
-      count = count + 1
+      # fill the sizeBar with the given sizes
+      countWidth = 0
+      count = 0
+      
+      while (count < len(sizeCircleArray)): # draws one circle for every size
+        sizeCircleArray[count] = avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.sizeBar, 
+          pos=(self.screenWidth - self.imageWidth + countWidth + (self.n/2), self.chooserNode.pos[1] + (self.n*2)), 
+          r=sizeCircleArray[count], color = self.toolBarBackground.fillcolor, strokewidth=5)
+  
+        sizeCircleArray[count].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setSize)
+        countWidth = countWidth + self.n
+        count = count + 1
+    else:
+      self.sizeBar.unlink()
+      self.sizeBarUnlinked = True
     
     
   def setSize (self, event):
@@ -190,11 +194,11 @@ class Draw(object):
     
     #unlink the choosebars
     self.sizeBar.unlink( )
-    self.sizeBarUnlink = True
+    self.sizeBarUnlinked = True
     self.updateChooserNode()
     
     self.colorBar.unlink( )
-    self.colorBarUnlink = True
+    self.colorBarUnlinked = True
   
   
   def colorChoose(self):  
@@ -203,21 +207,24 @@ class Draw(object):
     '''
     # color silver, red, fuchsia, lime, yellow, blue, aqua, black
     colorRecArray = ["c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff", "000000"]
-    if self.colorBarUnlink == True : # only build new colorBar if previous was unlinked
+    if self.colorBarUnlinked: # only build new colorBar if previous was unlinked
       self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
-      self.colorBarUnlink = False
-
-    # fill the colorBar with the given colors
-    countWidth = 0
-    colorCount = 0
-    
-    while (colorCount < len(colorRecArray)): # draws one rectangle for every color; with the size of n
-      colorRecArray[colorCount] = avg.RectNode(fillcolor=colorRecArray[colorCount], fillopacity=1.0, 
-          parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.tool.y), 
-          size=(self.n, self.n), color = self.toolBarBackground.fillcolor, strokewidth=2)
-      colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setColor)
-      countWidth = countWidth + self.n
-      colorCount = colorCount + 1
+      self.colorBarUnlinked = False
+      
+      # fill the colorBar with the given colors
+      countWidth = 0
+      colorCount = 0
+      
+      while (colorCount < len(colorRecArray)): # draws one rectangle for every color; with the size of n
+        colorRecArray[colorCount] = avg.RectNode(fillcolor=colorRecArray[colorCount], fillopacity=1.0, 
+            parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.chooserNode.pos[1]), 
+            size=(self.n, self.n), color = self.toolBarBackground.fillcolor, strokewidth=2)
+        colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setColor)
+        countWidth = countWidth + self.n
+        colorCount = colorCount + 1
+    else:
+      self.colorBar.unlink()
+      self.colorBarUnlinked = True
 
     
   def setColor ( self, event ):
@@ -227,11 +234,11 @@ class Draw(object):
     #unlink the choosebars
     self.color = event.node.fillcolor
     self.colorBar.unlink( )
-    self.colorBarUnlink = True
+    self.colorBarUnlinked = True
     self.updateChooserNode()
 
     self.sizeBar.unlink( )
-    self.sizeBarUnlink = True
+    self.sizeBarUnlinked = True
     
   
   def updateChooserNode(self):
@@ -279,12 +286,10 @@ class Draw(object):
     '''
     self.toolBar.unlink()
     self.drawingSurface.unlink()
-
-    if self.colorBarUnlink == False:
-      self.colorBar.unlink( )
-      self.colorBarUnlink = True
-    if self.colorBarUnlink == False:
-      self.sizeBar.unlink( )
-      self.sizeBarUnlink = True
-  
+    if not self.colorBarUnlinked:
+      self.colorBar.unlink()
+      self.colorBarUnlinked = True
+    if not self.sizeBarUnlinked:
+      self.sizeBar.unlink()
+      self.sizeBarUnlinked = True
     self.player.deleteCanvas("drawing")

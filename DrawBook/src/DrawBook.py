@@ -208,8 +208,7 @@ class DrawBook(AVGApp):
 
 
 def main():
-
-  book = DrawBook('./', False)
+  book = DrawBook(folder='./', enableMultitouch=False)
   book.start()
 
 if __name__ == '__main__':
