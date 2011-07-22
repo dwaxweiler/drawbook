@@ -117,7 +117,6 @@ class DrawBook(AVGApp):
                       self.height, self.folder + "/" + str(self.width) + "x" + str(self.height) + "/", self)
         x += self.imageWidth/5+2
       y += self.height/5+2
-    self.move(500,500)
   
   
   def counterUp(self):
