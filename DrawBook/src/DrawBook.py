@@ -103,7 +103,7 @@ class DrawBook(AVGApp):
     for i in range(len(self.configuration)):
       # calculate x coordinate of first image in each row
       x = (len(self.configuration[i])*(self.imageWidth/5+2)-2-self.width)/-2
-      if abs(x) > self.topmargin:
+      if abs(x) > self.leftmargin:
 		self.leftmargin = abs(x) #size of the left and right margins, see above
       for j in range(len(self.configuration[i])):
         path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
