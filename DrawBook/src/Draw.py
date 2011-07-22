@@ -164,9 +164,9 @@ class Draw(object):
     sizeCircleArray = [5, 10, 15, 20, 25, 30, 35, 40]
     if self.sizeBarUnlinked: # only build new sizeBar if previous was unlinked
       self.sizeBar = avg.DivNode( id="size", parent=self.player.getRootNode() ) # container for sizes
-      '''avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0, parent=self.sizeBar,
-                   pos=(self.screenWidth-self.imageWidth, self.chooserNode.pos[1]), size=(len(sizeCircleArray)*self.n, self.n),
-                   strokewidth=0)'''
+      avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0, parent=self.sizeBar,
+                   pos=(self.screenWidth-self.imageWidth, self.chooserNode.pos[1] + self.n/2 + 1),
+                   size=(len(sizeCircleArray)*self.n + 1, self.n), strokewidth=0)
       self.sizeBarUnlinked = False
 
       # fill the sizeBar with the given sizes
@@ -175,9 +175,8 @@ class Draw(object):
       
       while (count < len(sizeCircleArray)): # draws one circle for every size
         sizeCircleArray[count] = avg.CircleNode(fillcolor="000000", fillopacity=1.0, parent=self.sizeBar, 
-          pos=(self.screenWidth - self.imageWidth + countWidth + (self.n/2), self.chooserNode.pos[1] + (self.n*2)), 
-          r=sizeCircleArray[count], color = self.toolBarBackground.fillcolor, strokewidth=5)
-  
+          pos=(self.screenWidth - self.imageWidth + countWidth + (self.n/2), self.chooserNode.pos[1] + self.n), 
+          r=sizeCircleArray[count], color = "FFFFFF", strokewidth=3)
         sizeCircleArray[count].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setSize)
         countWidth = countWidth + self.n
         count = count + 1
@@ -217,7 +216,7 @@ class Draw(object):
       
       while (colorCount < len(colorRecArray)): # draws one rectangle for every color; with the size of n
         colorRecArray[colorCount] = avg.RectNode(fillcolor=colorRecArray[colorCount], fillopacity=1.0, 
-            parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.chooserNode.pos[1]), 
+            parent=self.colorBar, pos=(self.screenWidth - self.imageWidth + countWidth, self.chooserNode.pos[1] - self.n/2), 
             size=(self.n, self.n), color = self.toolBarBackground.fillcolor, strokewidth=2)
         colorRecArray[colorCount].setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.setColor)
         countWidth = countWidth + self.n
@@ -256,10 +255,11 @@ class Draw(object):
     '''
     event handler function that selects eraser tool
     '''
-    # previous pencil color (to restore after erasing)
-    self.oldColor = self.color
-    
-    self.color = "FFFFFF"
+    if self.color != "FFFFFF":
+      # previous pencil color (to restore after erasing)
+      self.oldColor = self.color
+      
+      self.color = "FFFFFF"
   
   
   def save(self, event):
