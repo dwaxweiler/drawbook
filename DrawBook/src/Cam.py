@@ -4,7 +4,7 @@ DrawBook
 To do:
 
 Bugs:
-- webcam may be not working; please test
+- webcam is not working
 '''
 
 #!/usr/bin/env python
@@ -18,70 +18,71 @@ from libavg import avg
 class Cam(object):
 
 
-  def __init__(self, player ,imageWidth, screenWidth, screenHeight, iconContainer, toolBar, n):
+  def __init__(self, player ,imageWidth, screenWidth, screenHeight, toolBar, n, drawCanvas):
+    '''
+    starts the cam tracking
+    '''
     # sets delivered arguments global
     self.player = player
     self.imageWidth = imageWidth
     self.screenWidth = screenWidth
     self.screenHeight = screenHeight
-    self.icons = iconContainer
     self.toolBar = toolBar
     self.n = n
+    self.drawCanvas = drawCanvas
     
-    # create a container for cam elements
-    self.camIcons = avg.DivNode(id="camIcons", parent=toolBar, pos=(5, 5))
-    self.webcamUnlink = True
-
-    webcam = avg.ImageNode(href="img/webcam.png", parent=iconContainer, pos=(0, 0), size=(self.n, self.n))
-    webcam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcam)
-
-
-  def webcam(self,event):
+    # create a container for all the toolbar elements
+    self.toolBar = avg.DivNode(parent=player.getRootNode())
+    # create the background of the toolbar
+    self.toolBarBackground = avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
+                                          size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    # container that holds all the icons
+    icons = avg.DivNode(parent=self.toolBar, pos=(10, 0))
+    # save button
+    camIconSave = avg.ImageNode(href="img/applycam.png", parent=icons, pos=(0, 0), size=(self.n, self.n))
+    camIconSave.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.save)
+    # cancel button
+    camIconCancel = avg.ImageNode(href="img/cancelcam.png", parent=icons, pos=(0, self.n), size=(self.n, self.n))
+    camIconCancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cancel)
+    # center the icons vertically
+    print (self.screenHeight - 2*self.n) / 2
+    icons.y = (self.screenHeight - 2*self.n) / 2
+    
+    # create the camera node
+    self.camera = avg.CameraNode(parent=self.player.getRootNode(), pos=(self.screenWidth - self.imageWidth,0),
+                                 size=(self.imageWidth, self.screenHeight), device="")
+    # read this:
+    # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
+    # http://www.libavg.de/wiki/ProgrammersGuide/CameraNode
+    # try first with: avg_showcamera.py !
+    # for testing
+    self.camera.dumpCameras()       # Dumps a list of available cameras to the console.
+    print self.camera.isAvailable() # Returns True if there is a working device that can deliver images attached to the CameraNode
+    
+    # start the camera
+    self.camera.play()
+    
+    
+  def save(self, event):
     '''
-    starts the cam tracking
-    http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
+    event handler function that takes a snapshot of the webcam and sets the picture as background
     '''
-    if self.webcamUnlink == True:
-      self.camara = avg.CameraNode( id="camara", parent=self.player.getRootNode(), 
-        pos=(self.screenWidth - self.imageWidth,0), size=(self.imageWidth, self.screenHeight) , 
-        driver='directshow', device="", framerate=15, capturewidth=int(self.imageWidth), 
-        captureheight=int(self.screenHeight) ) #, pixelformat="RGB")
-      self.webcamUnlink = False
+    if self.camera.isAvailable():
+      avg.ImageNode(self.camera.getBitmap(), parent=self.drawCanvas.getRootNode(), pos=(self.screenWidth - self.imageWidth,0), 
+                    size=(self.imageWidth, self.screenHeight), strokewidth=0)
+    self.exit()
 
-      # save button
-      camIconSave = avg.ImageNode(href="img/applycam.png", parent=self.camIcons, pos=(0, 4*self.n), size=(self.n, self.n))
-      camIconSave.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcamSnapshot)
-      # cancel button
-      camIconCancel = avg.ImageNode(href="img/cancelcam.png", parent=self.camIcons, pos=(0, 5*self.n), size=(self.n, self.n))
-      camIconCancel.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.webcamCancel)
 
-      # switch the icons to camicons
-      self.icons.opacity = 0
-      self.camIcons.opacity = 1
-      
-      self.camara.play( )
-    
-      # for testing
-      #self.camara.dumpCameras()       # Dumps a list of available cameras to the console.
-      #print self.camara.isAvailable() # Returns True if there is a working device that can deliver images attached to the CameraNode
-    
-    
-  def webcamSnapshot(self, event): 
-    # is called in the save funktion !
-    # take snapshot of the webcam and sets the picture as background
-    avg.ImageNode(self.camara.getBitmap(), parent=self.drawCanvas.getRootNode(), 
-      pos=(self.screenWidth - self.imageWidth,0), 
-      size=(self.imageWidth, self.screenHeight), strokewidth=0)
-    #self.drawingSurface.unlink() #i think the draw surface have to be rebuild so u can draw on the new picture
-    #self.createDrawingSurface()
-    self.webcamCancel()
-    
-    
-  def webcamCancel(self, event):
-    if self.webcamUnlink == False:
-      self.camara.unlink( )
-      self.webcamUnlink = True
-      # switch from the camicons back to the normal icons
-      self.icons.opacity = 1
-      self.camIcons.opacity = 0
-      
+  def cancel(self, event):
+    '''
+    event handler function that cancels the cam
+    '''
+    self.exit()
+  
+  
+  def exit(self):
+    '''
+    deletes everything related to the cam
+    '''
+    self.toolBar.unlink()
+    self.camera.unlink()

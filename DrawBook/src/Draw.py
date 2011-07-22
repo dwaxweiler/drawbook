@@ -37,17 +37,18 @@ class Draw(object):
     self.cursorIDs = {}               # dictionary of all the touches in use with their last position
     
     # create a container for all the toolbar elements
-    self.toolBar = avg.DivNode(id="tools", parent=player.getRootNode())
+    self.toolBar = avg.DivNode(parent=player.getRootNode())
     # create the background of the toolbar
     self.toolBarBackground = avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
                                           size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
     # container that holds all the icons
-    icons = avg.DivNode(id="icons", parent=self.toolBar, pos=(10, 0))
+    icons = avg.DivNode(parent=self.toolBar, pos=(10, 0))
     self.icons = icons
     # pace the icons with their functionality on the tool bar
     self.n = screenWidth-imageWidth-20
     # webcam button -> calls the camclass
-    Cam.Cam(self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.icons,self.toolBar, self.n)
+    cam = avg.ImageNode(href="img/webcam.png", parent=icons, pos=(0, 0), size=(self.n, self.n))
+    cam.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.cam)
     # pencil button
     pencil = avg.ImageNode(href="img/pencil.png", parent=icons, pos=(0, self.n), size=(self.n, self.n))
     pencil.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.pencil)
@@ -71,10 +72,7 @@ class Draw(object):
     self.drawCanvas = player.loadCanvasString("<canvas id=\"drawing\" width=\""+str(imageWidth)+"\" height=\""+str(screenHeight)+"\"></canvas>")
     avg.RectNode(fillcolor="FFFFFF", fillopacity=1.0, parent=self.drawCanvas.getRootNode(),
                  pos=(0, 0), size=(imageWidth, screenHeight), strokewidth=0)
-    self.createDrawingSurface()
-    
-
-  def createDrawingSurface(self):    
+      
     # load canvas in the scene
     self.drawingSurface = avg.ImageNode(id="surface", href="canvas:drawing", parent=self.player.getRootNode(),
                                  pos=(self.screenWidth-self.imageWidth, 0), size=(self.imageWidth, self.screenHeight))
@@ -140,6 +138,13 @@ class Draw(object):
     arguments: x1, y1: start position; x2, y2: end position
     '''
     avg.LineNode(color=self.color, parent=self.drawCanvas.getRootNode(), pos1=(x1, y1), pos2=(x2, y2), strokewidth=self.size*2)
+  
+  
+  def cam(self, event):
+    '''
+    event handler function that starts cam
+    '''
+    Cam.Cam(self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.toolBar, self.n, self.drawCanvas)
   
  
   def pencil(self, event):
