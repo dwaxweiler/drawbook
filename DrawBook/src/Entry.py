@@ -52,7 +52,7 @@ class Entry(object):
     print("largeView called")
     if self.db.scrolling or self.moved:
 		return
-    self.container = avg.DivNode(parent=self.parentNode, pos=(0, 0), size=(self.screenWidth, self.screenHeight))
+    self.container = avg.DivNode(parent=self.parentNode, pos=(-self.parentNode.x, -self.parentNode.y), size=(self.screenWidth, self.screenHeight))
     background = avg.RectNode(fillcolor="000000", fillopacity=0, parent=self.container, pos=(0, 0),
                               size=(self.screenWidth, self.screenHeight), strokewidth=0, sensitive=True)
     largeImage = avg.ImageNode(href=self.thumb.href, parent=self.container, pos=(self.thumb.x, self.thumb.y),
@@ -92,4 +92,6 @@ class Entry(object):
 		self.moved = True
 		y_dist = event.pos.y - p.sc_offset_y
 		x_dist = event.pos.x - p.sc_offset_x
-		p.move(x_dist/10,y_dist/10)
+		p.sc_offset_x = event.pos.x
+		p.sc_offset_y = event.pos.y
+		p.move(x_dist,y_dist)

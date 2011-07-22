@@ -82,4 +82,6 @@ class Empty(object):
 		self.moved = True
 		y_dist = event.pos.y - p.sc_offset_y
 		x_dist = event.pos.x - p.sc_offset_x
-		p.move(x_dist/10,y_dist/10)
+		p.sc_offset_x = event.pos.x
+		p.sc_offset_y = event.pos.y
+		p.move(x_dist,y_dist)
