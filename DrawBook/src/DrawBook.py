@@ -3,7 +3,6 @@ DrawBook
 
 To do:
 Bugs:
-- enlarging -> crash
 '''
 
 #!/usr/bin/env python
@@ -187,7 +186,7 @@ class DrawBook(AVGApp):
     # delete this rectangle
     rectangle.unlink()
     # put the drawing on the place where the rectangle was
-    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.counter) + ".jpg", "entr"+str(self.counter+1),
+    Entry.Entry(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/", str(self.counter),
                 self.masterDivNode, rectangle.pos[0], rectangle.pos[1], self.width, self.height, self.imageWidth, 0.2,self)
     # set the counter up and enlarge if necessary
     self.counterUp()
