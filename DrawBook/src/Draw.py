@@ -3,7 +3,6 @@ DrawBook
 
 To do:
 Bugs:
-- strange effects when user is drawing and moves with the finger pressed down right over the tool bar
 '''
 
 #!/usr/bin/env python
@@ -41,6 +40,7 @@ class Draw(object):
     # create the background of the toolbar
     self.toolBarBackground = avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
                                           size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    self.toolBarBackground.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.endDrawing)
     # container that holds all the icons
     icons = avg.DivNode(parent=self.toolBar, pos=(10, 0))
     self.icons = icons
@@ -60,7 +60,7 @@ class Draw(object):
     eraser = avg.ImageNode(href="img/eraser.png", parent=icons, pos=(0, 3*self.n), size=(self.n, self.n))
     eraser.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.eraser)
     # save button
-    save = avg.ImageNode(href="img/apply.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n))
+    save = avg.ImageNode(href="img/apply.png", parent=self.icons, pos=(0, 4*self.n), size=(self.n, self.n), sensitive=True)
     save.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.save)
     # cancel button
     cancel = avg.ImageNode(href="img/cancel.png", parent=self.icons, pos=(0, 5*self.n), size=(self.n, self.n))
