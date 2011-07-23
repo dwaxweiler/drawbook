@@ -13,7 +13,6 @@ from libavg import avg
 
 
 
-
 class Cam(object):
 
 

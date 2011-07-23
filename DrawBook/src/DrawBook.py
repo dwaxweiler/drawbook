@@ -10,8 +10,7 @@ Bugs:
 # -*- coding: utf-8 -*-
 
 from libavg import avg, AVGApp
-import os
-import Entry, Empty
+import os, Entry, Empty
 
 
 
@@ -134,7 +133,17 @@ class DrawBook(AVGApp):
     if free <= 2:
       self.enlarge()
       self.save()
+      self.clean()
       self.draw()
+  
+  
+  def clean(self):
+    '''
+    deletes all the images
+    '''
+    self.masterDivNode.unlink()
+    self.masterDivNode = avg.DivNode(parent=self.player.getRootNode())
+  
   
   def enlarge(self):
     '''
