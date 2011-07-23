@@ -19,14 +19,17 @@ class Entry(object):
     '''
     draws the image & sets event handler
     '''
-    self.db = DBook
+    self.path = path                   # path of the folder where the drawings are saved
+    self.id = id                       # identifier of the drawing
     self.parentNode = parentNode       # parent node for the nodes of the larger view
     self.imageWidth = imageWidth       # width of the image
     self.screenWidth = screenWidth     # with of the screen
     self.screenHeight = screenHeight   # height of the screen
+    self.db = DBook
     self.moved = False
     
-    self.thumb = avg.ImageNode(id=id, href=path, parent=parentNode, pos=(x, y), size=(imageWidth*factor, screenHeight*factor))
+    self.thumb = avg.ImageNode(id=id, href=path + "thumbs/" + id + ".jpg", parent=parentNode, pos=(x, y),
+                               size=(imageWidth*factor, screenHeight*factor))
     self.thumb.setEventHandler(avg.CURSORDOWN, avg.TOUCH|avg.MOUSE, self.thumbOnTouch)
     self.thumb.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.scroll)
     self.thumb.setEventHandler(avg.CURSORUP, avg.TOUCH|avg.MOUSE, self.release)
@@ -51,7 +54,7 @@ class Entry(object):
     self.container = avg.DivNode(parent=self.parentNode, pos=(-self.parentNode.x, -self.parentNode.y), size=(self.screenWidth, self.screenHeight))
     background = avg.RectNode(fillcolor="000000", fillopacity=0, parent=self.container, pos=(0, 0),
                               size=(self.screenWidth, self.screenHeight), strokewidth=0, sensitive=True)
-    largeImage = avg.ImageNode(href=self.thumb.href, parent=self.container, pos=(self.thumb.x, self.thumb.y),
+    largeImage = avg.ImageNode(href=self.path + self.id + ".jpg", parent=self.container, pos=(self.thumb.x, self.thumb.y),
                                size=(self.thumb.width, self.thumb.height), sensitive=True)
     animation = ParallelAnim([LinearAnim(largeImage, "x", 500, largeImage.x, (self.screenWidth - self.imageWidth) / 2),
                               LinearAnim(largeImage, "y", 500, largeImage.y, 15),

@@ -52,6 +52,10 @@ class DrawBook(AVGApp):
     # create subfolder for images for current resolution if it does not exist
     if not os.path.isdir(self.folder + "/" + str(self.width) + "x" + str(self.height)):
       os.makedirs(str(self.width) + "x" + str(self.height))
+    
+    # create subsubfolder for thumbs of images
+    if not os.path.isdir(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/thumbs"):
+      os.makedirs(self.folder + "/" + str(self.width) + "x" + str(self.height) + "/thumbs")
       
   
   def save(self):
@@ -104,8 +108,8 @@ class DrawBook(AVGApp):
       if abs(x) > self.leftmargin:
         self.leftmargin = abs(x) #size of the left and right margins, see above
       for j in range(len(self.configuration[i])):
-        path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/" + str(self.configuration[i][j]) + ".jpg"
-        if self.configuration[i][j] != 0 and os.path.isfile(path):
+        path = self.folder + "/" + str(self.width) + "x" + str(self.height) + "/"
+        if self.configuration[i][j] != 0 and os.path.isfile(path + str(self.configuration[i][j]) + ".jpg"):
           # draw image if it exists
           Entry.Entry(path, str(self.configuration[i][j]), self.masterDivNode, x, y,
                       self.width, self.height, self.imageWidth, 0.2, self)

@@ -9,7 +9,7 @@ Bugs:
 # -*- coding: utf-8 -*-
 
 from libavg import avg, LinearAnim
-import math, Cam
+import math, Cam, Image
 
 
 
@@ -271,9 +271,15 @@ class Draw(object):
     '''
     event handler function that saves the image and returns to the gallery
     '''
-      # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
+    # save drawing only when there has been drawn at least one node (remember: one node represents the white background)
     if(self.drawCanvas.getRootNode().getNumChildren() > 1):
-      avg.Bitmap(self.player.getCanvas("drawing").screenshot()).save(self.folder + str(self.drawBook.counter) + ".jpg")
+      imagePathName = self.folder + str(self.drawBook.counter) + ".jpg"
+      self.player.getCanvas("drawing").screenshot().save(imagePathName)
+      # create thumb
+      im = Image.open(imagePathName)
+      im.thumbnail((int(self.imageWidth/5), int(self.screenWidth/5)))
+      im.save(self.folder + "thumbs/" + str(self.drawBook.counter) + ".jpg", "JPEG")
+      # set the new drawing in the configuration and display it
       self.drawBook.setNewDrawing(self.j, self.i)
     self.exit()
 
