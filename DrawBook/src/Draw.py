@@ -40,6 +40,7 @@ class Draw(object):
     # create the background of the toolbar
     self.toolBarBackground = avg.RectNode(fillcolor="2a2a2a", fillopacity=1.0, parent=self.toolBar, pos=(0, 0),
                                           size=(screenWidth-imageWidth, screenHeight), strokewidth=0)
+    # stop drawing if over toolbar
     self.toolBarBackground.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.endDrawing)
     # container that holds all the icons
     icons = avg.DivNode(parent=self.toolBar, pos=(10, 0))
@@ -173,6 +174,8 @@ class Draw(object):
                    pos=(self.screenWidth-self.imageWidth, self.chooserNode.pos[1] + self.n/2 + 1),
                    size=(len(sizeCircleArray)*self.n + 1, self.n), strokewidth=0)
       self.sizeBarUnlinked = False
+      # stop drawing if over size bar
+      self.sizeBar.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.endDrawing)
 
       # fill the sizeBar with the given sizes
       countWidth = 0
@@ -214,6 +217,8 @@ class Draw(object):
     if self.colorBarUnlinked: # only build new colorBar if previous was unlinked
       self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
       self.colorBarUnlinked = False
+      # stop drawing if over color bar
+      self.colorBar.setEventHandler(avg.CURSORMOTION, avg.TOUCH|avg.MOUSE, self.endDrawing)
       
       # fill the colorBar with the given colors
       countWidth = 0
