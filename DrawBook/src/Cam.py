@@ -47,8 +47,11 @@ class Cam(object):
     icons.y = (self.screenHeight - 2*self.n) / 2
     
     # create the camera node
-    self.camera = avg.CameraNode(parent=self.player.getRootNode(), pos=(self.screenWidth - self.imageWidth,0),
-                                 size=(self.imageWidth, self.screenHeight), device="")
+    self.camera = avg.CameraNode( id="camera", parent=self.player.getRootNode(),
+      pos=(self.screenWidth - self.imageWidth,0), size=(self.imageWidth, self.screenHeight) ,
+      driver='directshow', device="", framerate=15, capturewidth=int(self.imageWidth),
+      captureheight=int(self.screenHeight), pixelformat="YUV422")
+    
     # read this:
     # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
     # http://www.libavg.de/wiki/ProgrammersGuide/CameraNode
