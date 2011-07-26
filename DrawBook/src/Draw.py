@@ -22,15 +22,15 @@ class Draw(object):
     '''
     self.color  = "000000"            # draw color
     self.oldColor = self.color        # previous draw color
-    self.colorBarUnlinked = True        # variable to prevent the bar to build twice
-    self.sizeBarUnlinked = True         # variable to prevent the bar to build twice
+    self.colorBarUnlinked = True      # variable to prevent the bar to build twice
+    self.sizeBarUnlinked = True       # variable to prevent the bar to build twice
     self.size = 10                    # size of the pencil or eraser (radius)
     self.j = j                        # y-position of the new drawing in the matrix
     self.i = i                        # x-position of the new drawing in the matrix
     self.player = player              # libavg player
     self.imageWidth = imageWidth      # width of the new image
     self.screenWidth = screenWidth    # width of the screen
-    self.screenHeight = screenHeight
+    self.screenHeight = screenHeight  # height of the screen
     self.folder = folder              # folder where the new drawing should be stored
     self.drawBook = drawBook          # instance of the draw book
     self.cursorIDs = {}               # dictionary of all the touches in use with their last position
@@ -145,7 +145,7 @@ class Draw(object):
     '''
     event handler function that starts cam
     '''
-    Cam.Cam(self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.toolBar, self.n, self.drawCanvas)
+    Cam.Cam(self.player, self.imageWidth, self.screenWidth, self.screenHeight, self.toolBar, self.n, self.drawCanvas, self.drawBook)
   
  
   def pencil(self, event):
@@ -167,7 +167,7 @@ class Draw(object):
     '''
     sets the available sizes and builds a container for them
     '''
-    sizeCircleArray = [5, 10, 15, 20, 25, 30, 35, 40]
+    sizeCircleArray = [10, 15, 20, 25, 30, 35, 40]
     if self.sizeBarUnlinked: # only build new sizeBar if previous was unlinked
       self.sizeBar = avg.DivNode( id="size", parent=self.player.getRootNode() ) # container for sizes
       avg.RectNode(fillcolor=self.toolBarBackground.fillcolor, fillopacity=1.0, parent=self.sizeBar,
@@ -212,8 +212,8 @@ class Draw(object):
     '''
     sets the available colors and builds a container for them
     '''
-    # color silver, red, fuchsia, lime, yellow, blue, aqua, black
-    colorRecArray = ["c0c0c0", "ff0000", "ff00ff", "00ff00", "ffff00", "0000ff", "00ffff", "000000"]
+    # 6 most important colors of Johannes Itten's Farbkreis
+    colorRecArray = ["F4E500", "F19101", "E32322", "6D3889", "2671B2", "008E5B", "000000"]
     if self.colorBarUnlinked: # only build new colorBar if previous was unlinked
       self.colorBar = avg.DivNode( id="colors", parent=self.player.getRootNode() ) # container for colors
       self.colorBarUnlinked = False

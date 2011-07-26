@@ -16,7 +16,8 @@ import os, Entry, Empty
 class DrawBook(AVGApp):
   
   
-  def __init__(self, folder, enableMultitouch):
+  def __init__(self, folder, enableMultitouch, camDriver, camDevice, camUnit, camFormat, camCapturewidth, camCaptureheight,
+               camFramerate, camFw800):
     '''
     initializes the setting for the draw book
     arguments: width, height (screen resolution to run in full screen mode), relative path
@@ -28,7 +29,15 @@ class DrawBook(AVGApp):
     self.imageWidth = int(Point2D.x)*0.9          # width of the image
     self.folder = folder                          # path to the folder which contains the images
     self.counter = 0                              # number of next drawing
-    self.configFileName = 'drawbook_config.txt'   # file name of the DrawBook configuration   
+    self.configFileName = 'drawbook_config.txt'   # file name of the DrawBook configuration
+    self.camDriver = camDriver
+    self.camDevice = camDevice
+    self.camUnit = camUnit
+    self.camFormat = camFormat
+    self.camCapturewidth = camCapturewidth
+    self.camCaptureheight = camCaptureheight
+    self.camFramerate = camFramerate
+    self.camFw800 = camFw800
     self.player.loadString("""<avg size="("""+str(self.width)+""","""+str(self.height)+""")"></avg>""")
     if enableMultitouch:
       self.player.enableMultitouch()
@@ -220,7 +229,8 @@ class DrawBook(AVGApp):
 
 
 def main():
-  book = DrawBook(folder='./', enableMultitouch=False)
+  book = DrawBook(folder='./', enableMultitouch=False, camDriver='firewire', camDevice='', camUnit=-1, camFormat="RGB",
+                  camFramerate=15, camFw800=False, camCapturewidth=640, camCaptureheight=480)
   book.start()
 
 

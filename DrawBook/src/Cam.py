@@ -4,6 +4,8 @@ DrawBook
 To do:
 Bugs:
 - webcam is not working
+  http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
+  http://www.libavg.de/wiki/ProgrammersGuide/CameraNode
 '''
 
 #!/usr/bin/env python
@@ -16,7 +18,7 @@ from libavg import avg
 class Cam(object):
 
 
-  def __init__(self, player ,imageWidth, screenWidth, screenHeight, toolBar, n, drawCanvas):
+  def __init__(self, player ,imageWidth, screenWidth, screenHeight, toolBar, n, drawCanvas, drawBook):
     '''
     starts the cam tracking
     '''
@@ -28,6 +30,7 @@ class Cam(object):
     self.toolBar = toolBar
     self.n = n
     self.drawCanvas = drawCanvas
+    self.drawBook = drawBook
     
     # create a container for all the toolbar elements
     self.toolBar = avg.DivNode(parent=player.getRootNode())
@@ -47,16 +50,18 @@ class Cam(object):
     icons.y = (self.screenHeight - 2*self.n) / 2
     
     # create the camera node
-    self.camera = avg.CameraNode( id="camera", parent=self.player.getRootNode(),
-      pos=(self.screenWidth - self.imageWidth,0), size=(self.imageWidth, self.screenHeight) ,
-      driver='directshow', device="", framerate=15, capturewidth=int(self.imageWidth),
-      captureheight=int(self.screenHeight), pixelformat="YUV422")
+    self.camera = avg.CameraNode(id="camera",
+                                 captureheight=self.drawBook.camCaptureheight,
+                                 capturewidth=self.drawBook.camCapturewidth,
+                                 device=self.drawBook.camDevice,
+                                 driver=self.drawBook.camDriver,
+                                 framerate=self.drawBook.camFramerate,
+                                 parent=self.player.getRootNode(),
+                                 pixelformat=self.drawBook.camFormat,
+                                 pos=(self.screenWidth - self.imageWidth,0),
+                                 size=(self.imageWidth, self.screenHeight),
+                                 unit=self.drawBook.camUnit)
     
-    # read this:
-    # http://www.libavg.de/reference/current/areanodes.html#libavg.avg.CameraNode
-    # http://www.libavg.de/wiki/ProgrammersGuide/CameraNode
-    # try first with: avg_showcamera.py !
-    # for testing
     self.camera.dumpCameras()       # Dumps a list of available cameras to the console.
     print self.camera.isAvailable() # Returns True if there is a working device that can deliver images attached to the CameraNode
     
