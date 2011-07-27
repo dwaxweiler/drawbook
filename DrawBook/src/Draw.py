@@ -153,6 +153,7 @@ class Draw(object):
     event handler function that selects pencil tool
     '''
     self.color = self.oldColor
+    self.updateChooserNode()
   
   
   def chooser(self, event):
@@ -270,6 +271,7 @@ class Draw(object):
       self.oldColor = self.color
       
       self.color = "FFFFFF"
+      self.updateChooserNode()
   
   
   def save(self, event):
