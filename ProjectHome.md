@@ -1,1 +1,0 @@
-multi touch draw book with libavg and Python
