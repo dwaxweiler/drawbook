@@ -1,6 +1,8 @@
 # drawbook
 multi touch draw book with libavg and Python
 
+Initial authors: Alexander Stenzel, Daniel Waxweiler, Hieu Nguyen, Lukas Löhle
+
 ## Prerequisites
 You have to install:
  1. [Python 2.7.x](http://www.python.org)
